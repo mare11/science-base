@@ -26,9 +26,9 @@ public class RegistrationController {
         this.userTaskService = userTaskService;
     }
 
-    @GetMapping(value = "/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<FormFieldsDto> startUserRegistration(@PathVariable String username) {
-        return ResponseEntity.ok(userTaskService.startProcessAndGetFormFields(REGISTRATION_PROCESS_KEY, username));
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<FormFieldsDto> startUserRegistration() {
+        return ResponseEntity.ok(userTaskService.startProcessAndGetFormFields(REGISTRATION_PROCESS_KEY, null));
     }
 
     @PostMapping(value = "/{taskId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
