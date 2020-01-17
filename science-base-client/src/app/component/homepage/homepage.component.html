@@ -1,0 +1,107 @@
+<mat-toolbar>
+    <button mat-button routerLink="/">
+        <h1 class="white-header">Home</h1>
+    </button>
+    <button mat-button (click)="openRegistrationDialog()" *ngIf="!userDto">
+        <h1>Sign Up</h1>
+    </button>
+    <button mat-button (click)="openLoginDialog()" *ngIf="!userDto">
+        <h1>Login</h1>
+    </button>
+    <button mat-button *ngIf="userDto">
+        <h1>{{userDto.username}}</h1>
+    </button>
+    <button mat-button (click)="logoutUser()" *ngIf="userDto">
+        <h1>Logout</h1>
+    </button>
+    <button mat-button (click)="openNewMagazineDialog()" *ngIf="userDto && userDto.role =='EDITOR'">
+        <h1>+ Magazine</h1>
+    </button>
+</mat-toolbar>
+<div *ngIf="userDto && userDto.role =='EDITOR'">
+    <h1 matSubheader>Tasks</h1>
+    <table class="table">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">Task Name</th>
+                <th scope="col">Magazine Name</th>
+                <th scope="col">Confirm</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let mag of magazinesForCorrection">
+                <td>{{mag.name}}</td>
+                <td>{{mag.variable}}</td>
+                <td>
+                    <button mat-icon-button color="primary" (click)="openMagazineDialogForCorrection(mag.taskId)">
+                        <mat-icon>edit</mat-icon>
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div *ngIf="userDto && userDto.role =='ADMIN'">
+    <br>
+    <div *ngIf="nonEnabledReviewers && nonEnabledReviewers.length">
+        <h1 matSubheader>Confirm reviewers</h1>
+        <table class="table">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">Username</th>
+                    <th scope="col">First Name</th>
+                    <th scope="col">Last Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Confirm</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let rev of nonEnabledReviewers">
+                    <td>{{rev.username}}</td>
+                    <td>{{rev.firstName}}</td>
+                    <td>{{rev.lastName}}</td>
+                    <td>{{rev.email}}</td>
+                    <td>
+                        <button mat-icon-button color="primary" (click)="enableReviewer(rev)">
+                            <mat-icon>check</mat-icon>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div *ngIf="nonApprovedMagazines && nonApprovedMagazines.length">
+        <h1 matSubheader>Approve magazines</h1>
+        <table class="table">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">ISSN</th>
+                    <th scope="col">Science Areas</th>
+                    <th scope="col">Payment Method</th>
+                    <th scope="col">{{nonApprovedMagazines[0].formFieldsDto.formFields[0].label}}</th>
+                    <th scope="col">Confirm</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let mag of nonApprovedMagazines">
+                    <td>{{mag.name}}</td>
+                    <td>{{mag.issn}}</td>
+                    <td>{{mag.scienceAreas}}</td>
+                    <td>{{mag.paymentMethod}}</td>
+                    <td>
+                        <div [formGroup]="mag.formFieldsDto.form">
+                            <mat-checkbox [formControlName]="mag.formFieldsDto.formFields[0].id" color="primary">
+                            </mat-checkbox>
+                        </div>
+                    </td>
+                    <td>
+                        <button mat-icon-button color="primary" (click)="approveMagazine(mag)">
+                            <mat-icon>check</mat-icon>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

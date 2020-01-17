@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_01ieygv"
+                  targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.4.1">
+    <bpmn:process id="registration" isExecutable="true">
+        <bpmn:extensionElements>
+            <camunda:executionListener class="org.upp.sciencebase.registration.StartProcessHandler" event="start"/>
+        </bpmn:extensionElements>
+        <bpmn:startEvent id="StartEvent_1">
+            <bpmn:outgoing>SequenceFlow_0hry3hs</bpmn:outgoing>
+        </bpmn:startEvent>
+        <bpmn:sequenceFlow id="SequenceFlow_0hry3hs" sourceRef="StartEvent_1" targetRef="Task_1so1cqm"/>
+        <bpmn:userTask id="Task_1so1cqm" name="Enter account data">
+            <bpmn:extensionElements>
+                <camunda:formData>
+                    <camunda:formField id="username" label="Username" type="string">
+                        <camunda:validation>
+                            <camunda:constraint name="required"/>
+                            <camunda:constraint name="minlength" config="4"/>
+                            <camunda:constraint name="maxlength" config="20"/>
+                        </camunda:validation>
+                    </camunda:formField>
+                    <camunda:formField id="password" label="Password" type="password">
+                        <camunda:validation>
+                            <camunda:constraint name="required"/>
+                            <camunda:constraint name="minlength" config="4"/>
+                            <camunda:constraint name="maxlength" config="30"/>
+                        </camunda:validation>
+                    </camunda:formField>
+                    <camunda:formField id="email" label="Email" type="email">
+                        <camunda:validation>
+                            <camunda:constraint name="required"/>
+                        </camunda:validation>
+                    </camunda:formField>
+                    <camunda:formField id="firstName" label="First Name" type="string">
+                        <camunda:validation>
+                            <camunda:constraint name="required"/>
+                            <camunda:constraint name="maxlength" config="30"/>
+                        </camunda:validation>
+                    </camunda:formField>
+                    <camunda:formField id="lastName" label="Last Name" type="string">
+                        <camunda:validation>
+                            <camunda:constraint name="required"/>
+                            <camunda:constraint name="maxlength" config="30"/>
+                        </camunda:validation>
+                    </camunda:formField>
+                    <camunda:formField id="country" label="Country" type="string">
+                        <camunda:validation>
+                            <camunda:constraint name="required"/>
+                            <camunda:constraint name="maxlength" config="30"/>
+                        </camunda:validation>
+                    </camunda:formField>
+                    <camunda:formField id="city" label="City" type="string">
+                        <camunda:validation>
+                            <camunda:constraint name="required"/>
+                            <camunda:constraint name="maxlength" config="30"/>
+                        </camunda:validation>
+                    </camunda:formField>
+                    <camunda:formField id="selectedAreas" label="Science Areas" type="multi-enum">
+                        <camunda:validation>
+                            <camunda:constraint name="required"/>
+                        </camunda:validation>
+                    </camunda:formField>
+                    <camunda:formField id="title" label="Title" type="string">
+                        <camunda:validation>
+                            <camunda:constraint name="maxlength" config="30"/>
+                        </camunda:validation>
+                    </camunda:formField>
+                    <camunda:formField id="reviewer" label="Reviewer" type="boolean"/>
+                </camunda:formData>
+                <camunda:taskListener class="org.upp.sciencebase.registration.RegistrationInitHandler" event="create"/>
+            </bpmn:extensionElements>
+            <bpmn:incoming>SequenceFlow_0hry3hs</bpmn:incoming>
+            <bpmn:outgoing>SequenceFlow_0omd1mj</bpmn:outgoing>
+        </bpmn:userTask>
+        <bpmn:endEvent id="EndEvent_088nwf8">
+            <bpmn:incoming>SequenceFlow_0py4ont</bpmn:incoming>
+            <bpmn:incoming>SequenceFlow_11gzrlf</bpmn:incoming>
+        </bpmn:endEvent>
+        <bpmn:exclusiveGateway id="ExclusiveGateway_011tm6i">
+            <bpmn:incoming>SequenceFlow_0juvrrs</bpmn:incoming>
+            <bpmn:outgoing>SequenceFlow_0d2zaeo</bpmn:outgoing>
+            <bpmn:outgoing>SequenceFlow_0py4ont</bpmn:outgoing>
+        </bpmn:exclusiveGateway>
+        <bpmn:sequenceFlow id="SequenceFlow_0d2zaeo" name="user is reviewer" sourceRef="ExclusiveGateway_011tm6i"
+                           targetRef="UserTask_1w5y5qc">
+            <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${reviewer}</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="SequenceFlow_0py4ont" name="user is not reviewer" sourceRef="ExclusiveGateway_011tm6i"
+                           targetRef="EndEvent_088nwf8">
+            <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!reviewer}</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="SequenceFlow_0omd1mj" sourceRef="Task_1so1cqm" targetRef="Task_0e31a56"/>
+        <bpmn:userTask id="UserTask_0br8ngd" name="Confirm account">
+            <bpmn:extensionElements>
+                <camunda:formData>
+                    <camunda:formField id="username" label="Username" type="string">
+                        <camunda:validation>
+                            <camunda:constraint name="readonly"/>
+                        </camunda:validation>
+                    </camunda:formField>
+                    <camunda:formField id="password" label="Password" type="string">
+                        <camunda:validation>
+                            <camunda:constraint name="readonly"/>
+                        </camunda:validation>
+                    </camunda:formField>
+                    <camunda:formField id="email" label="Email" type="string">
+                        <camunda:validation>
+                            <camunda:constraint name="readonly"/>
+                        </camunda:validation>
+                    </camunda:formField>
+                    <camunda:formField id="first_name" label="First Name" type="string">
+                        <camunda:validation>
+                            <camunda:constraint name="readonly"/>
+                        </camunda:validation>
+                    </camunda:formField>
+                    <camunda:formField id="last_name" label="Last Name" type="string">
+                        <camunda:validation>
+                            <camunda:constraint name="readonly"/>
+                        </camunda:validation>
+                    </camunda:formField>
+                    <camunda:formField id="country" label="Country" type="string">
+                        <camunda:validation>
+                            <camunda:constraint name="readonly"/>
+                        </camunda:validation>
+                    </camunda:formField>
+                    <camunda:formField id="city" label="City" type="string">
+                        <camunda:validation>
+                            <camunda:constraint name="readonly"/>
+                        </camunda:validation>
+                    </camunda:formField>
+                    <camunda:formField id="title" label="Title" type="string">
+                        <camunda:validation>
+                            <camunda:constraint name="readonly"/>
+                        </camunda:validation>
+                    </camunda:formField>
+                    <camunda:formField id="selected_areas" label="Selected Science Areas" type="string"
+                                       defaultValue="${display_areas}">
+                        <camunda:validation>
+                            <camunda:constraint name="readonly"/>
+                        </camunda:validation>
+                    </camunda:formField>
+                    <camunda:formField id="reviewer" label="Reviewer" type="boolean">
+                        <camunda:validation>
+                            <camunda:constraint name="readonly"/>
+                        </camunda:validation>
+                    </camunda:formField>
+                </camunda:formData>
+            </bpmn:extensionElements>
+            <bpmn:incoming>SequenceFlow_0dqj1i0</bpmn:incoming>
+            <bpmn:outgoing>SequenceFlow_13fpc6r</bpmn:outgoing>
+        </bpmn:userTask>
+        <bpmn:sequenceFlow id="SequenceFlow_13fpc6r" sourceRef="UserTask_0br8ngd" targetRef="Task_1d4nqiw"/>
+        <bpmn:userTask id="UserTask_1w5y5qc" name="Confirm reviewer" camunda:assignee="admin">
+            <bpmn:incoming>SequenceFlow_0d2zaeo</bpmn:incoming>
+            <bpmn:outgoing>SequenceFlow_1rl2nol</bpmn:outgoing>
+        </bpmn:userTask>
+        <bpmn:sequenceFlow id="SequenceFlow_1rl2nol" sourceRef="UserTask_1w5y5qc" targetRef="Task_0k33owv"/>
+        <bpmn:serviceTask id="Task_1d4nqiw" name="Enable account"
+                          camunda:class="org.upp.sciencebase.registration.EnableUserService">
+            <bpmn:incoming>SequenceFlow_13fpc6r</bpmn:incoming>
+            <bpmn:outgoing>SequenceFlow_0juvrrs</bpmn:outgoing>
+        </bpmn:serviceTask>
+        <bpmn:sequenceFlow id="SequenceFlow_0juvrrs" sourceRef="Task_1d4nqiw" targetRef="ExclusiveGateway_011tm6i"/>
+        <bpmn:serviceTask id="Task_0k33owv" name="Enable reviewer"
+                          camunda:class="org.upp.sciencebase.registration.EnableReviewerService">
+            <bpmn:incoming>SequenceFlow_1rl2nol</bpmn:incoming>
+            <bpmn:outgoing>SequenceFlow_11gzrlf</bpmn:outgoing>
+        </bpmn:serviceTask>
+        <bpmn:sequenceFlow id="SequenceFlow_11gzrlf" sourceRef="Task_0k33owv" targetRef="EndEvent_088nwf8"/>
+        <bpmn:sequenceFlow id="SequenceFlow_0dqj1i0" sourceRef="Task_0e31a56" targetRef="UserTask_0br8ngd"/>
+        <bpmn:serviceTask id="Task_0e31a56" name="Save &#38; validate data"
+                          camunda:class="org.upp.sciencebase.registration.RegistrationSaveService">
+            <bpmn:incoming>SequenceFlow_0omd1mj</bpmn:incoming>
+            <bpmn:outgoing>SequenceFlow_0dqj1i0</bpmn:outgoing>
+        </bpmn:serviceTask>
+    </bpmn:process>
+    <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+        <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="registration">
+            <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+                <dc:Bounds x="152" y="102" width="36" height="36"/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNEdge id="SequenceFlow_0hry3hs_di" bpmnElement="SequenceFlow_0hry3hs">
+                <di:waypoint x="188" y="120"/>
+                <di:waypoint x="270" y="120"/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNShape id="UserTask_0nchnd0_di" bpmnElement="Task_1so1cqm">
+                <dc:Bounds x="270" y="80" width="100" height="80"/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="EndEvent_088nwf8_di" bpmnElement="EndEvent_088nwf8">
+                <dc:Bounds x="1302" y="102" width="36" height="36"/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="ExclusiveGateway_011tm6i_di" bpmnElement="ExclusiveGateway_011tm6i"
+                              isMarkerVisible="true">
+                <dc:Bounds x="955" y="95" width="50" height="50"/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNEdge id="SequenceFlow_0d2zaeo_di" bpmnElement="SequenceFlow_0d2zaeo">
+                <di:waypoint x="980" y="145"/>
+                <di:waypoint x="980" y="210"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds x="990" y="167" width="79" height="14"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="SequenceFlow_0py4ont_di" bpmnElement="SequenceFlow_0py4ont">
+                <di:waypoint x="1005" y="120"/>
+                <di:waypoint x="1302" y="120"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds x="1123" y="86" width="52" height="27"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="SequenceFlow_0omd1mj_di" bpmnElement="SequenceFlow_0omd1mj">
+                <di:waypoint x="370" y="120"/>
+                <di:waypoint x="450" y="120"/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNShape id="UserTask_0br8ngd_di" bpmnElement="UserTask_0br8ngd">
+                <dc:Bounds x="610" y="80" width="100" height="80"/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNEdge id="SequenceFlow_13fpc6r_di" bpmnElement="SequenceFlow_13fpc6r">
+                <di:waypoint x="710" y="120"/>
+                <di:waypoint x="770" y="120"/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNShape id="UserTask_1w5y5qc_di" bpmnElement="UserTask_1w5y5qc">
+                <dc:Bounds x="930" y="210" width="100" height="80"/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNEdge id="SequenceFlow_1rl2nol_di" bpmnElement="SequenceFlow_1rl2nol">
+                <di:waypoint x="1030" y="250"/>
+                <di:waypoint x="1110" y="250"/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNShape id="ServiceTask_0nrlqtl_di" bpmnElement="Task_1d4nqiw">
+                <dc:Bounds x="770" y="80" width="100" height="80"/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNEdge id="SequenceFlow_0juvrrs_di" bpmnElement="SequenceFlow_0juvrrs">
+                <di:waypoint x="870" y="120"/>
+                <di:waypoint x="955" y="120"/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNShape id="ServiceTask_0l0gk2j_di" bpmnElement="Task_0k33owv">
+                <dc:Bounds x="1110" y="210" width="100" height="80"/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNEdge id="SequenceFlow_11gzrlf_di" bpmnElement="SequenceFlow_11gzrlf">
+                <di:waypoint x="1210" y="250"/>
+                <di:waypoint x="1320" y="250"/>
+                <di:waypoint x="1320" y="138"/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="SequenceFlow_0dqj1i0_di" bpmnElement="SequenceFlow_0dqj1i0">
+                <di:waypoint x="550" y="120"/>
+                <di:waypoint x="610" y="120"/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNShape id="ServiceTask_1p3m2uq_di" bpmnElement="Task_0e31a56">
+                <dc:Bounds x="450" y="80" width="100" height="80"/>
+            </bpmndi:BPMNShape>
+        </bpmndi:BPMNPlane>
+    </bpmndi:BPMNDiagram>
+</bpmn:definitions>
