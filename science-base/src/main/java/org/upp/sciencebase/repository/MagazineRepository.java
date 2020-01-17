@@ -8,4 +8,6 @@ import org.upp.sciencebase.model.Magazine;
 public interface MagazineRepository extends JpaRepository<Magazine, Long> {
 
     Magazine findByName(String name);
+
+    Magazine findByNameAndIssn(String name, String issn);
 }
