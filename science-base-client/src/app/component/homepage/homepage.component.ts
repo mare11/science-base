@@ -1,17 +1,16 @@
-import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material';
-import { RegistrationService } from 'src/app/service/registration/registration.service';
-import { RegistrationDialogComponent } from '../registration-dialog/registration-dialog.component';
-import { SnackBar } from 'src/app/utils';
-import { LoginService } from 'src/app/service/login/login.service';
-import { LoginDialogComponent } from '../login-dialog/login-dialog.component';
-import { Router } from '@angular/router';
-import { UserService } from 'src/app/service/user/user.service';
-import { AdminService } from 'src/app/service/admin/admin.service';
-import { MagazineDialogComponent } from '../magazine-dialog/magazine-dialog.component';
-import { MagazineService } from 'src/app/service/magazine/magazine.service';
-import { FormArray, FormGroup, FormControl } from '@angular/forms';
-import { EditorService } from 'src/app/service/editor/editor.service';
+import {Component, OnInit} from '@angular/core';
+import {MatDialog} from '@angular/material';
+import {RegistrationService} from 'src/app/service/registration/registration.service';
+import {RegistrationDialogComponent} from '../registration-dialog/registration-dialog.component';
+import {SnackBar} from 'src/app/utils';
+import {LoginService} from 'src/app/service/login/login.service';
+import {LoginDialogComponent} from '../login-dialog/login-dialog.component';
+import {Router} from '@angular/router';
+import {AdminService} from 'src/app/service/admin/admin.service';
+import {MagazineDialogComponent} from '../magazine-dialog/magazine-dialog.component';
+import {MagazineService} from 'src/app/service/magazine/magazine.service';
+import {FormControl, FormGroup} from '@angular/forms';
+import {EditorService} from 'src/app/service/editor/editor.service';
 
 @Component({
   selector: 'app-homepage',
@@ -24,14 +23,14 @@ export class HomepageComponent implements OnInit {
   userTasks: [];
   nonEnabledReviewers: any;
   nonApprovedMagazines: any;
-  magazinesFormArray: FormArray;
-  magazinesForCorrection: [];
+  magazines: [];
 
   constructor(
     private registrationService: RegistrationService, private loginService: LoginService,
-    private userService: UserService, private adminService: AdminService,
-    private editorService: EditorService, private magazineService: MagazineService,
-    private dialog: MatDialog, private snackBar: SnackBar, private router: Router) { }
+    private adminService: AdminService, private editorService: EditorService,
+    private magazineService: MagazineService, private dialog: MatDialog,
+    private snackBar: SnackBar, private router: Router) {
+  }
 
   ngOnInit() {
     this.userDto = this.loginService.getLocalStorageItem();
@@ -94,9 +93,9 @@ export class HomepageComponent implements OnInit {
         this.getNonEnabledReviewers();
         this.getNonApprovedMagazines();
       } else if (this.userDto.role === 'EDITOR') {
-        this.editorService.getMagazinesForCorrection(this.userDto.username).subscribe(
+        this.editorService.getMagazines(this.userDto.username).subscribe(
           (data: []) => {
-            this.magazinesForCorrection = data;
+            this.magazines = data;
             console.log(data);
           }
         );
@@ -151,7 +150,7 @@ export class HomepageComponent implements OnInit {
     const o = new Array();
     Object.keys(value).forEach(
       key => {
-        o.push({ fieldId: key, fieldValue: value[key] });
+        o.push({fieldId: key, fieldValue: value[key]});
       });
     console.log(o);
     this.adminService.approveMagazine(magazine.formFieldsDto.taskId, o).subscribe(
@@ -170,6 +169,7 @@ export class HomepageComponent implements OnInit {
   openNewMagazineDialog() {
     this.magazineService.startProcess(this.userDto.username).subscribe(
       (res: any) => {
+        res.title = 'Create new magazine';
         console.log(res);
         const dialogRef = this.dialog.open(MagazineDialogComponent,
           {
@@ -182,6 +182,7 @@ export class HomepageComponent implements OnInit {
         dialogRef.afterClosed().subscribe(
           (result) => {
             if (result) {
+              result.title = 'Add magazine redaction';
               this.dialog.open(MagazineDialogComponent,
                 {
                   width: '500px',
@@ -201,6 +202,7 @@ export class HomepageComponent implements OnInit {
   openMagazineDialogForCorrection(taskId) {
     this.editorService.getCorrectionTaskForm(taskId).subscribe(
       (res: any) => {
+        res.title = 'Update magazine data';
         console.log(res);
         const dialogRef = this.dialog.open(MagazineDialogComponent,
           {

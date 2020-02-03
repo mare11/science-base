@@ -38,10 +38,11 @@ public class RedactionSaveService implements JavaDelegate {
 
         List<String> editors = (List<String>) execution.getVariable(SELECTED_EDITORS_FIELD);
         Set<User> editorSet = new HashSet<>();
-        editors.forEach(username ->
-                editorSet.add(userRepository.findByUsername(username))
-        );
-        magazine.setAreaEditors(editorSet);
+        if (editors != null) {
+            editors.forEach(username ->
+                    editorSet.add(userRepository.findByUsername(username)));
+            magazine.setAreaEditors(editorSet);
+        }
 
         List<String> reviewers = (List<String>) execution.getVariable(SELECTED_REVIEWERS_FIELD);
         Set<User> reviewerSet = new HashSet<>();

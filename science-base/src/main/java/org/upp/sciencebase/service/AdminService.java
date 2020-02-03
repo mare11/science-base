@@ -3,7 +3,6 @@ package org.upp.sciencebase.service;
 import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.RuntimeService;
-import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,7 +23,6 @@ import static org.upp.sciencebase.util.ProcessUtil.*;
 @Service
 public class AdminService {
 
-    private final TaskService taskService;
     private final UserTaskService userTaskService;
     private final ScienceAreaRepository scienceAreaRepository;
     private final PaymentMethodRepository paymentMethodRepository;
@@ -32,9 +30,8 @@ public class AdminService {
     private final FormService formService;
 
     @Autowired
-    public AdminService(RuntimeService runtimeService, TaskService taskService, UserTaskService userTaskService, ScienceAreaRepository scienceAreaRepository, PaymentMethodRepository paymentMethodRepository, FormService formService) {
+    public AdminService(RuntimeService runtimeService, UserTaskService userTaskService, ScienceAreaRepository scienceAreaRepository, PaymentMethodRepository paymentMethodRepository, FormService formService) {
         this.runtimeService = runtimeService;
-        this.taskService = taskService;
         this.userTaskService = userTaskService;
         this.scienceAreaRepository = scienceAreaRepository;
         this.paymentMethodRepository = paymentMethodRepository;
@@ -42,7 +39,7 @@ public class AdminService {
     }
 
     public List<ReviewerDto> getNonEnabledReviewers() {
-        List<Task> taskList = getAdminTasksForProcessKey(REGISTRATION_PROCESS_KEY);
+        List<Task> taskList = userTaskService.getUserTasksForSpecificProcess(ADMIN_USERNAME, REGISTRATION_PROCESS_KEY);
 
         return taskList.stream()
                 .map(task -> {
@@ -63,7 +60,7 @@ public class AdminService {
     }
 
     public List<MagazineDto> getNonApprovedMagazines() {
-        List<Task> taskList = getAdminTasksForProcessKey(NEW_MAGAZINE_PROCESS_KEY);
+        List<Task> taskList = userTaskService.getUserTasksForSpecificProcess(ADMIN_USERNAME, NEW_MAGAZINE_PROCESS_KEY);
 
         return taskList.stream()
                 .map(task -> {
@@ -94,13 +91,5 @@ public class AdminService {
 
     public void approveMagazine(List<FormSubmissionDto> submittedFields, String taskId) {
         userTaskService.submitForm(submittedFields, taskId);
-    }
-
-    private List<Task> getAdminTasksForProcessKey(String processKey) {
-        return taskService.createTaskQuery()
-                .processDefinitionKey(processKey)
-                .taskAssignee(ADMIN_USERNAME)
-                .active()
-                .list();
     }
 }

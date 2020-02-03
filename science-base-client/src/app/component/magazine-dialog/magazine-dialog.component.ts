@@ -1,8 +1,8 @@
-import { Component, Inject, ViewChild } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA, MatStepper, MatDialog } from '@angular/material';
-import { SnackBar } from 'src/app/utils';
-import { MagazineService } from 'src/app/service/magazine/magazine.service';
+import {Component, Inject} from '@angular/core';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import {SnackBar} from 'src/app/utils';
+import {MagazineService} from 'src/app/service/magazine/magazine.service';
 
 @Component({
   selector: 'app-magazine-dialog',
@@ -11,6 +11,7 @@ import { MagazineService } from 'src/app/service/magazine/magazine.service';
 })
 export class MagazineDialogComponent {
 
+  private title: string;
   private form: FormGroup;
   private formFieldsDto = null;
   private formFields = [];
@@ -25,14 +26,29 @@ export class MagazineDialogComponent {
   }
 
   initForm(data) {
+    this.title = data.title;
     this.form = new FormGroup({});
     this.formFieldsDto = data;
     this.formFields = data.formFields;
     this.processInstance = data.processInstanceId;
     this.formFields.forEach(field => {
-      this.form.addControl(field.id, new FormControl(field.value, this.extractValidators(field)));
+      this.form.addControl(field.id, new FormControl({
+        value: field.value,
+        disabled: this.isDisabled(field)
+      }, this.extractValidators(field)));
     });
     console.log(this.form);
+  }
+
+  isDisabled(field) {
+    if (field.validationConstraints) {
+      for (const constraint of field.validationConstraints) {
+        if (constraint.name === 'readonly') {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   extractValidators(field) {
@@ -62,7 +78,7 @@ export class MagazineDialogComponent {
     const o = new Array();
     Object.keys(value).forEach(
       key => {
-        o.push({ fieldId: key, fieldValue: value[key] });
+        o.push({fieldId: key, fieldValue: value[key]});
       });
 
     console.log(o);

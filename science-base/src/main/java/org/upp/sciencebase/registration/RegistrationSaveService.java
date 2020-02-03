@@ -1,6 +1,7 @@
 package org.upp.sciencebase.registration;
 
 import lombok.extern.slf4j.Slf4j;
+import org.camunda.bpm.engine.IdentityService;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +24,15 @@ public class RegistrationSaveService implements JavaDelegate {
 
     private final UserService userService;
     private final EmailService emailService;
+    private final IdentityService identityService;
     private final UserRepository userRepository;
     private final ScienceAreaRepository scienceAreaRepository;
 
     @Autowired
-    public RegistrationSaveService(UserService userService, EmailService emailService, UserRepository userRepository, ScienceAreaRepository scienceAreaRepository) {
+    public RegistrationSaveService(UserService userService, EmailService emailService, IdentityService identityService, UserRepository userRepository, ScienceAreaRepository scienceAreaRepository) {
         this.userService = userService;
         this.emailService = emailService;
+        this.identityService = identityService;
         this.userRepository = userRepository;
         this.scienceAreaRepository = scienceAreaRepository;
     }
@@ -39,8 +42,16 @@ public class RegistrationSaveService implements JavaDelegate {
         User user = extractUserVariables(execution);
         userService.validateUserData(user);
 
+        org.camunda.bpm.engine.identity.User camundaUser = identityService.newUser(user.getUsername());
+        camundaUser.setPassword(user.getPassword());
+        camundaUser.setFirstName(user.getFirstName());
+        camundaUser.setLastName(user.getLastName());
+        camundaUser.setEmail(user.getEmail());
+
         log.info("Saving user: {}", user.getUsername());
         userRepository.save(user);
+        identityService.saveUser(camundaUser);
+
         emailService.sendRegistrationMail(user, execution.getProcessInstanceId());
     }
 

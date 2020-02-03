@@ -9,8 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.upp.sciencebase.dto.FormFieldDto;
 import org.upp.sciencebase.dto.FormFieldsDto;
-import org.upp.sciencebase.dto.TaskDto;
+import org.upp.sciencebase.dto.MagazineDto;
 import org.upp.sciencebase.model.ScienceArea;
+import org.upp.sciencebase.repository.MagazineRepository;
 import org.upp.sciencebase.repository.ScienceAreaRepository;
 import org.upp.sciencebase.util.MultiEnumFormType;
 
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static org.upp.sciencebase.util.ProcessUtil.NEW_MAGAZINE_PROCESS_KEY;
 import static org.upp.sciencebase.util.ProcessUtil.SELECTED_AREAS_FIELD;
 
 @Slf4j
@@ -31,27 +33,31 @@ public class EditorService {
     private final FormService formService;
     private final RuntimeService runtimeService;
     private final ScienceAreaRepository scienceAreaRepository;
+    private final MagazineRepository magazineRepository;
 
     @Autowired
-    public EditorService(UserTaskService userTaskService, TaskService taskService, FormService formService, RuntimeService runtimeService, ScienceAreaRepository scienceAreaRepository) {
+    public EditorService(UserTaskService userTaskService, TaskService taskService, FormService formService, RuntimeService runtimeService, ScienceAreaRepository scienceAreaRepository, MagazineRepository magazineRepository) {
         this.userTaskService = userTaskService;
         this.taskService = taskService;
         this.formService = formService;
         this.runtimeService = runtimeService;
         this.scienceAreaRepository = scienceAreaRepository;
+        this.magazineRepository = magazineRepository;
     }
 
-    public List<TaskDto> getMagazinesForCorrection(String username) {
-        List<TaskDto> userTasks = userTaskService.getUserTasks(username);
-        userTasks.forEach(taskDto -> {
-            Task task = taskService.createTaskQuery()
-                    .taskId(taskDto.getTaskId())
-                    .singleResult();
-            String magazineName = runtimeService.getVariable(task.getProcessInstanceId(), "name").toString();
-            taskDto.setVariable(magazineName);
-        });
-        return userTasks;
+    public List<MagazineDto> getMagazines(String username) {
+        return magazineRepository.findAllByMainEditor_Username(username).stream()
+                .map(magazine ->
+                        MagazineDto.builder()
+                                .name(magazine.getName())
+                                .issn(magazine.getIssn())
+                                .paymentMethod(magazine.getPaymentMethod().getMethodValue())
+                                .enabled(magazine.isEnabled())
+                                .taskId(getCorrectionTaskIdForMagazine(username, magazine.getName()))
+                                .build())
+                .collect(Collectors.toList());
     }
+
 
     public FormFieldsDto getCorrectionTaskFormFields(String taskId) {
         Task task = taskService.createTaskQuery()
@@ -75,5 +81,16 @@ public class EditorService {
                 .taskId(task.getId())
                 .formFields(formFieldDtos)
                 .build();
+    }
+
+    private String getCorrectionTaskIdForMagazine(String username, String magazineName) {
+        List<Task> userTasks = userTaskService.getUserTasksForSpecificProcess(username, NEW_MAGAZINE_PROCESS_KEY);
+        for (Task task : userTasks) {
+            String name = runtimeService.getVariable(task.getProcessInstanceId(), "name").toString();
+            if (magazineName.equals(name)) {
+                return task.getId();
+            }
+        }
+        return null;
     }
 }

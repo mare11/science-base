@@ -39,7 +39,7 @@ public class MagazineSaveService implements JavaDelegate {
     @Override
     public void execute(DelegateExecution execution) {
         Magazine magazine = extractMagazineVariables(execution);
-        if (magazineRepository.findByNameAndIssn(magazine.getName(), magazine.getIssn()) != null) {
+        if (magazineRepository.findByNameOrIssn(magazine.getName(), magazine.getIssn()) != null) {
             throw new MagazineNameExistsException(magazine.getName(), magazine.getIssn());
         }
         magazineRepository.save(magazine);

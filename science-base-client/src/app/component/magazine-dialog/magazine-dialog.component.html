@@ -1,84 +1,85 @@
-<h1 mat-dialog-title>Create new magazine</h1>
+<h1 mat-dialog-title>{{title}}</h1>
 <mat-dialog-content [formGroup]="form">
-    <div *ngFor="let field of formFields; let i = index;">
-        <div [ngSwitch]="field.type.name">
-            <mat-checkbox *ngSwitchCase="'boolean'" [formControlName]="field.id" labelPosition="before" color="primary">
-                {{field.label}}:
-            </mat-checkbox>
-            <mat-form-field *ngSwitchCase="'long'" appearance="outline">
-                <mat-label>{{field.label}}</mat-label>
-                <input matInput type="number" [formControlName]="field.id">
-                <mat-error
-                    *ngIf="form.get(field.id).invalid && (form.get(field.id).dirty || form.get(field.id).touched)">
-                    <div *ngIf="form.get(field.id).errors.required"> {{field.label}} is required.</div>
-                    <div
-                        *ngIf="!form.get(field.id).errors.required && (form.get(field.id).errors.minlength || form.get(field.id).errors.maxlength)">
-                        Invalid {{field.label}} length!
-                    </div>
-                </mat-error>
-            </mat-form-field>
-            <mat-form-field *ngSwitchCase="'enum'" appearance="outline">
-                <mat-label>{{field.label}}</mat-label>
-                <mat-select [formControlName]="field.id">
-                    <mat-option *ngFor="let item of field.type.values | keyvalue" [value]="item.key">
-                        {{item.value}}
-                    </mat-option>
-                </mat-select>
-                <mat-error
-                    *ngIf="form.get(field.id).invalid && (form.get(field.id).dirty || form.get(field.id).touched)">
-                    <div *ngIf="form.get(field.id).errors.required"> {{field.label}} is required.</div>
-                </mat-error>
-            </mat-form-field>
-            <mat-form-field *ngSwitchCase="'multi-enum'" appearance="outline">
-                <mat-label>{{field.label}}</mat-label>
-                <mat-select [formControlName]="field.id" multiple>
-                    <mat-option *ngFor="let item of field.type.values | keyvalue" [value]="item.key">
-                        {{item.value}}
-                    </mat-option>
-                </mat-select>
-                <mat-error
-                    *ngIf="form.get(field.id).invalid && (form.get(field.id).dirty || form.get(field.id).touched)">
-                    <div *ngIf="form.get(field.id).errors.required"> {{field.label}} is required.</div>
-                </mat-error>
-            </mat-form-field>
-            <mat-form-field *ngSwitchCase="'email'" appearance="outline">
-                <mat-label>{{field.label}}</mat-label>
-                <input matInput type="email" [formControlName]="field.id">
-                <mat-error
-                    *ngIf="form.get(field.id).invalid && (form.get(field.id).dirty || form.get(field.id).touched)">
-                    <div *ngIf="form.get(field.id).errors.required"> {{field.label}} is required.</div>
-                    <div *ngIf="form.get(field.id).errors.email"> Invalid format for {{field.label}}.</div>
-                </mat-error>
-            </mat-form-field>
-            <mat-form-field *ngSwitchCase="'password'" appearance="outline">
-                <mat-label>{{field.label}}</mat-label>
-                <input matInput type="password" [formControlName]="field.id">
-                <mat-error
-                    *ngIf="form.get(field.id).invalid && (form.get(field.id).dirty || form.get(field.id).touched)">
-                    <div *ngIf="form.get(field.id).errors.required"> {{field.label}} is required.</div>
-                    <div
-                        *ngIf="!form.get(field.id).errors.required && (form.get(field.id).errors.minlength || form.get(field.id).errors.maxlength)">
-                        Invalid {{field.label}} length!
-                    </div>
-                </mat-error>
-            </mat-form-field>
-            <mat-form-field *ngSwitchDefault appearance="outline">
-                <mat-label>{{field.label}}</mat-label>
-                <input matInput type="text" [formControlName]="field.id">
-                <mat-error
-                    *ngIf="form.get(field.id).invalid && (form.get(field.id).dirty || form.get(field.id).touched)">
-                    <div *ngIf="form.get(field.id).errors.required"> {{field.label}} is required.</div>
-                    <div
-                        *ngIf="!form.get(field.id).errors.required && (form.get(field.id).errors.minlength || form.get(field.id).errors.maxlength)">
-                        Invalid {{field.label}} length!
-                    </div>
-                </mat-error>
-            </mat-form-field>
-        </div>
+  <div *ngFor="let field of formFields; let i = index;">
+    <div [ngSwitch]="field.type.name">
+      <mat-checkbox *ngSwitchCase="'boolean'" [formControlName]="field.id" labelPosition="before" color="primary">
+        {{field.label}}:
+      </mat-checkbox>
+      <mat-form-field *ngSwitchCase="'long'" appearance="outline">
+        <mat-label>{{field.label}}</mat-label>
+        <input matInput type="number" [formControlName]="field.id">
+        <mat-error
+          *ngIf="form.get(field.id).invalid && (form.get(field.id).dirty || form.get(field.id).touched)">
+          <div *ngIf="form.get(field.id).errors.required"> {{field.label}} is required.</div>
+          <div
+            *ngIf="!form.get(field.id).errors.required && (form.get(field.id).errors.minlength || form.get(field.id).errors.maxlength)">
+            Invalid {{field.label}} length!
+          </div>
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field *ngSwitchCase="'enum'" appearance="outline">
+        <mat-label>{{field.label}}</mat-label>
+        <mat-select [formControlName]="field.id">
+          <mat-option *ngFor="let item of field.type.values | keyvalue" [value]="item.key">
+            {{item.value}}
+          </mat-option>
+        </mat-select>
+        <mat-error
+          *ngIf="form.get(field.id).invalid && (form.get(field.id).dirty || form.get(field.id).touched)">
+          <div *ngIf="form.get(field.id).errors.required"> {{field.label}} is required.</div>
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field *ngSwitchCase="'multi-enum'" appearance="outline">
+        <mat-label>{{field.label}}</mat-label>
+        <mat-select [formControlName]="field.id" multiple>
+          <mat-option *ngFor="let item of field.type.values | keyvalue" [value]="item.key">
+            {{item.value}}
+          </mat-option>
+        </mat-select>
+        <mat-error
+          *ngIf="form.get(field.id).invalid && (form.get(field.id).dirty || form.get(field.id).touched)">
+          <div *ngIf="form.get(field.id).errors.required"> {{field.label}} is required.</div>
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field *ngSwitchCase="'email'" appearance="outline">
+        <mat-label>{{field.label}}</mat-label>
+        <input matInput type="email" [formControlName]="field.id">
+        <mat-error
+          *ngIf="form.get(field.id).invalid && (form.get(field.id).dirty || form.get(field.id).touched)">
+          <div *ngIf="form.get(field.id).errors.required"> {{field.label}} is required.</div>
+          <div *ngIf="form.get(field.id).errors.email"> Invalid format for {{field.label}}.</div>
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field *ngSwitchCase="'password'" appearance="outline">
+        <mat-label>{{field.label}}</mat-label>
+        <input matInput type="password" [formControlName]="field.id">
+        <mat-error
+          *ngIf="form.get(field.id).invalid && (form.get(field.id).dirty || form.get(field.id).touched)">
+          <div *ngIf="form.get(field.id).errors.required"> {{field.label}} is required.</div>
+          <div
+            *ngIf="!form.get(field.id).errors.required && (form.get(field.id).errors.minlength || form.get(field.id).errors.maxlength)">
+            Invalid {{field.label}} length!
+          </div>
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field *ngSwitchDefault appearance="outline">
+        <mat-label>{{field.label}}</mat-label>
+        <input matInput type="text" [formControlName]="field.id">
+        <mat-error
+          *ngIf="form.get(field.id).invalid && (form.get(field.id).dirty || form.get(field.id).touched)">
+          <div *ngIf="form.get(field.id).errors.required"> {{field.label}} is required.</div>
+          <div
+            *ngIf="!form.get(field.id).errors.required && (form.get(field.id).errors.minlength || form.get(field.id).errors.maxlength)">
+            Invalid {{field.label}} length!
+          </div>
+        </mat-error>
+      </mat-form-field>
     </div>
+  </div>
 </mat-dialog-content>
 <mat-dialog-actions>
-    <button mat-raised-button color="primary" type="submit" (click)="submitForm()"
-        [disabled]="form.invalid">Submit</button>
-    <button mat-raised-button [mat-dialog-close]>Cancel</button>
+  <button mat-raised-button color="primary" type="submit" (click)="submitForm()"
+          [disabled]="form.invalid">Submit
+  </button>
+  <button mat-raised-button [mat-dialog-close]>Cancel</button>
 </mat-dialog-actions>

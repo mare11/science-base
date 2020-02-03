@@ -2,6 +2,7 @@ package org.upp.sciencebase.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.FormService;
+import org.camunda.bpm.engine.IdentityService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.form.TaskFormData;
@@ -12,14 +13,11 @@ import org.springframework.stereotype.Service;
 import org.upp.sciencebase.dto.FormFieldDto;
 import org.upp.sciencebase.dto.FormFieldsDto;
 import org.upp.sciencebase.dto.FormSubmissionDto;
-import org.upp.sciencebase.dto.TaskDto;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import static org.upp.sciencebase.util.ProcessUtil.PROCESS_INITIATOR_FIELD;
 
 @Slf4j
 @Service
@@ -28,17 +26,19 @@ public class UserTaskService {
     private final RuntimeService runtimeService;
     private final TaskService taskService;
     private final FormService formService;
+    private final IdentityService identityService;
 
     @Autowired
-    public UserTaskService(RuntimeService runtimeService, TaskService taskService, FormService formService) {
+    public UserTaskService(RuntimeService runtimeService, TaskService taskService, FormService formService, IdentityService identityService) {
         this.runtimeService = runtimeService;
         this.taskService = taskService;
         this.formService = formService;
+        this.identityService = identityService;
     }
 
     public FormFieldsDto startProcessAndGetFormFields(String processKey, String username) {
+        identityService.setAuthenticatedUserId(username);
         ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(processKey);
-        runtimeService.setVariable(processInstance.getId(), PROCESS_INITIATOR_FIELD, username);
         Task task = taskService.createTaskQuery().processInstanceId(processInstance.getId()).list().get(0);
         TaskFormData taskFormData = formService.getTaskFormData(task.getId());
         return FormFieldsDto.builder()
@@ -70,19 +70,12 @@ public class UserTaskService {
         log.info("Task with id: {} completed", taskId);
     }
 
-    public List<TaskDto> getUserTasks(String username) {
+    public List<Task> getUserTasksForSpecificProcess(String username, String processKey) {
         log.info("Fetching user tasks for username: {}", username);
         return taskService.createTaskQuery()
+                .processDefinitionKey(processKey)
                 .taskAssignee(username)
-                .orderByDueDate()
-                .asc()
-                .list()
-                .stream()
-                .map(task -> TaskDto.builder()
-                        .taskId(task.getId())
-                        .name(task.getName())
-                        .assignee(task.getAssignee())
-                        .build())
-                .collect(Collectors.toList());
+                .active()
+                .list();
     }
 }

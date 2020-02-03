@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -9,9 +9,10 @@ export class EditorService {
   usersBaseUrl = '/api/editors/';
   formFieldsUrl = 'form/';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+  }
 
-  getMagazinesForCorrection(username) {
+  getMagazines(username) {
     return this.http.get(this.usersBaseUrl.concat(username));
   }
 

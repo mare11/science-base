@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.upp.sciencebase.dto.FormFieldsDto;
-import org.upp.sciencebase.dto.TaskDto;
+import org.upp.sciencebase.dto.MagazineDto;
 import org.upp.sciencebase.service.EditorService;
 
 import java.util.List;
@@ -24,8 +24,8 @@ public class EditorController {
     }
 
     @GetMapping("/{username}")
-    public ResponseEntity<List<TaskDto>> getMagazinesForCorrection(@PathVariable String username) {
-        return ResponseEntity.ok(editorService.getMagazinesForCorrection(username));
+    public ResponseEntity<List<MagazineDto>> getMagazines(@PathVariable String username) {
+        return ResponseEntity.ok(editorService.getMagazines(username));
     }
 
     @GetMapping("/form/{taskId}")
