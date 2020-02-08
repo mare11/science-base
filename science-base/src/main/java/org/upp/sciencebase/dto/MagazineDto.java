@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.upp.sciencebase.model.PaymentMethod;
 
 import java.util.Set;
 
@@ -15,7 +16,7 @@ public class MagazineDto {
     private String name;
     private String issn;
     private Set<String> scienceAreas;
-    private String paymentMethod;
+    private PaymentMethod paymentMethod;
     private boolean enabled;
     private String taskId;
     private FormFieldsDto formFieldsDto;

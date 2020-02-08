@@ -7,7 +7,6 @@ import org.upp.sciencebase.dto.FormSubmissionDto;
 import org.upp.sciencebase.dto.MagazineDto;
 import org.upp.sciencebase.dto.ReviewerDto;
 import org.upp.sciencebase.service.AdminService;
-import org.upp.sciencebase.service.UserTaskService;
 
 import java.util.List;
 
@@ -16,12 +15,10 @@ import java.util.List;
 public class AdminController {
 
     private final AdminService adminService;
-    private final UserTaskService userTaskService;
 
     @Autowired
-    public AdminController(AdminService adminService, UserTaskService userTaskService) {
+    public AdminController(AdminService adminService) {
         this.adminService = adminService;
-        this.userTaskService = userTaskService;
     }
 
     @GetMapping("/reviewers")

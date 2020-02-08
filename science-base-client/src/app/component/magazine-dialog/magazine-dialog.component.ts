@@ -75,7 +75,7 @@ export class MagazineDialogComponent {
   submitForm() {
     const value = this.form.value;
     console.log(value);
-    const o = new Array();
+    const o = [];
     Object.keys(value).forEach(
       key => {
         o.push({fieldId: key, fieldValue: value[key]});

@@ -1,21 +1,26 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MagazineService {
 
-  registrationBaseUrl = '/api/magazine/';
+  magazinesBaseUrl = '/api/magazine/';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+  }
+
+  getAllMagazines() {
+    return this.http.get(this.magazinesBaseUrl);
+  }
 
   startProcess(username) {
-    return this.http.get(this.registrationBaseUrl.concat(username));
+    return this.http.get(this.magazinesBaseUrl.concat(username));
   }
 
   submitForm(taskId, value) {
-    return this.http.post(this.registrationBaseUrl.concat(taskId), value);
+    return this.http.post(this.magazinesBaseUrl.concat(taskId), value);
   }
 
 }

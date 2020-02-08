@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.upp.sciencebase.dto.FormFieldsDto;
 import org.upp.sciencebase.dto.FormSubmissionDto;
+import org.upp.sciencebase.dto.MagazineDto;
 
 import java.util.List;
 
@@ -20,7 +21,12 @@ public class MagazineController {
         this.magazineService = magazineService;
     }
 
-    @GetMapping(value = "/{username}")
+    @GetMapping
+    public ResponseEntity<List<MagazineDto>> getMagazines() {
+        return ResponseEntity.ok(magazineService.getAllMagazines());
+    }
+
+    @GetMapping("/{username}")
     public ResponseEntity<FormFieldsDto> startNewMagazineProcess(@PathVariable String username) {
         return ResponseEntity.ok(magazineService.startProcess(username));
     }

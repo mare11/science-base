@@ -1,27 +1,16 @@
 package org.upp.sciencebase.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 
-import javax.persistence.*;
+@Getter
+public enum PaymentMethod {
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@Entity
-public class PaymentMethod {
+    READERS("Charge readers"),
+    AUTHORS("Charge authors");
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private final String label;
 
-    @Column(nullable = false)
-    private String methodKey;
-
-    @Column(nullable = false)
-    private String methodValue;
-
+    PaymentMethod(String label) {
+        this.label = label;
+    }
 }

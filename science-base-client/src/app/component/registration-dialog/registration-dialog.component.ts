@@ -1,8 +1,8 @@
-import { Component, Inject } from '@angular/core';
-import { MatDialogRef, MatSnackBar, MAT_DIALOG_DATA } from '@angular/material';
-import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { RegistrationService } from 'src/app/service/registration/registration.service';
-import { SnackBar } from 'src/app/utils';
+import {Component, Inject} from '@angular/core';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {RegistrationService} from 'src/app/service/registration/registration.service';
+import {SnackBar} from 'src/app/utils';
 
 @Component({
   selector: 'app-registration-dialog',
@@ -55,10 +55,10 @@ export class RegistrationDialogComponent {
   submitForm() {
     const value = this.form.value;
     console.log(value);
-    const o = new Array();
+    const o = [];
     Object.keys(value).forEach(
       key => {
-        o.push({ fieldId: key, fieldValue: value[key] });
+        o.push({fieldId: key, fieldValue: value[key]});
       });
 
     console.log(o);

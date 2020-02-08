@@ -17,9 +17,17 @@
   <button mat-button (click)="openNewMagazineDialog()" *ngIf="userDto && userDto.role =='EDITOR'">
     <h1>New Magazine</h1>
   </button>
+  <button mat-button (click)="downloadFile()">
+    <h1>Download</h1>
+  </button>
 </mat-toolbar>
-<div *ngIf="userDto && userDto.role =='EDITOR'">
+<div>
   <h1 matSubheader>Magazines</h1>
+  <button mat-raised-button (click)="inputFile.click()">
+    Upload PDF
+  </button>
+  <label *ngIf="file">{{file.name}}</label>
+  <input hidden type="file" #inputFile (change)="uploadFile($event)"/>
   <table class="table">
     <thead class="thead-light">
     <tr>
@@ -27,6 +35,7 @@
       <th scope="col">ISSN</th>
       <th scope="col">Enabled</th>
       <th scope="col">Correction</th>
+      <th scope="col">New text</th>
     </tr>
     </thead>
     <tbody>
@@ -41,6 +50,12 @@
         <button *ngIf="mag.taskId" mat-icon-button color="primary"
                 (click)="openMagazineDialogForCorrection(mag.taskId)">
           <mat-icon>edit</mat-icon>
+        </button>
+      </td>
+      <td>
+        <button *ngIf="mag.enabled && userDto" mat-icon-button color="primary"
+                (click)="openNewTextDialog(mag.name)">
+          <mat-icon>library_add</mat-icon>
         </button>
       </td>
     </tr>

@@ -4,6 +4,7 @@ import org.camunda.bpm.engine.impl.cfg.AbstractProcessEnginePlugin;
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.springframework.context.annotation.Configuration;
 import org.upp.sciencebase.util.EmailFormType;
+import org.upp.sciencebase.util.FileFormType;
 import org.upp.sciencebase.util.MultiEnumFormType;
 import org.upp.sciencebase.util.PasswordFormType;
 
@@ -24,5 +25,6 @@ public class CustomFormFieldTypePlugin extends AbstractProcessEnginePlugin {
         processEngineConfiguration.getCustomFormTypes().add(new MultiEnumFormType(new HashMap<>()));
         processEngineConfiguration.getCustomFormTypes().add(new EmailFormType());
         processEngineConfiguration.getCustomFormTypes().add(new PasswordFormType());
+        processEngineConfiguration.getCustomFormTypes().add(new FileFormType());
     }
 }

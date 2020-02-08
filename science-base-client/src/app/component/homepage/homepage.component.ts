@@ -11,6 +11,8 @@ import {MagazineDialogComponent} from '../magazine-dialog/magazine-dialog.compon
 import {MagazineService} from 'src/app/service/magazine/magazine.service';
 import {FormControl, FormGroup} from '@angular/forms';
 import {EditorService} from 'src/app/service/editor/editor.service';
+import {TextService} from '../../service/text/text.service';
+import {TextDialogComponent} from '../text-dialog/text-dialog.component';
 
 @Component({
   selector: 'app-homepage',
@@ -24,12 +26,13 @@ export class HomepageComponent implements OnInit {
   nonEnabledReviewers: any;
   nonApprovedMagazines: any;
   magazines: [];
+  file: any;
 
   constructor(
     private registrationService: RegistrationService, private loginService: LoginService,
     private adminService: AdminService, private editorService: EditorService,
-    private magazineService: MagazineService, private dialog: MatDialog,
-    private snackBar: SnackBar, private router: Router) {
+    private magazineService: MagazineService, private textService: TextService,
+    private dialog: MatDialog, private snackBar: SnackBar, private router: Router) {
   }
 
   ngOnInit() {
@@ -88,17 +91,24 @@ export class HomepageComponent implements OnInit {
   }
 
   getUserTasks() {
+    this.magazineService.getAllMagazines().subscribe(
+      (data: []) => {
+        this.magazines = data;
+        console.log(data);
+      }
+    );
     if (this.userDto) {
       if (this.userDto.role === 'ADMIN') {
         this.getNonEnabledReviewers();
         this.getNonApprovedMagazines();
       } else if (this.userDto.role === 'EDITOR') {
-        this.editorService.getMagazines(this.userDto.username).subscribe(
-          (data: []) => {
-            this.magazines = data;
-            console.log(data);
-          }
-        );
+        // TODO
+        // this.editorService.getMagazines(this.userDto.username).subscribe(
+        //   (data: []) => {
+        //     this.magazines = data;
+        //     console.log(data);
+        //   }
+        // );
       }
     } else {
       this.userTasks = [];
@@ -147,7 +157,7 @@ export class HomepageComponent implements OnInit {
   approveMagazine(magazine) {
     console.log(magazine);
     const value = magazine.formFieldsDto.form.value;
-    const o = new Array();
+    const o = [];
     Object.keys(value).forEach(
       key => {
         o.push({fieldId: key, fieldValue: value[key]});
@@ -204,7 +214,7 @@ export class HomepageComponent implements OnInit {
       (res: any) => {
         res.title = 'Update magazine data';
         console.log(res);
-        const dialogRef = this.dialog.open(MagazineDialogComponent,
+        this.dialog.open(MagazineDialogComponent,
           {
             width: '500px',
             disableClose: true,
@@ -212,6 +222,70 @@ export class HomepageComponent implements OnInit {
             data: res
           });
       });
+  }
+
+  openNewTextDialog(magazineName) {
+    this.textService.startProcess(magazineName, this.userDto.username).subscribe(
+      (res: any) => {
+        res.title = 'Add new text';
+        console.log(res);
+        this.dialog.open(TextDialogComponent,
+          {
+            width: '500px',
+            disableClose: true,
+            autoFocus: true,
+            data: res
+          });
+      });
+  }
+
+  uploadFile(event) {
+    const file = event.target.files[0];
+    if (file) {
+      console.log(file);
+      if (file.size > 131072) {
+        alert('Exceeded allowed file size! Maximum size is 128 KB.');
+        return;
+      }
+      // const fileReader = new FileReader();
+      // fileReader.readAsDataURL(file);
+      // fileReader.onload = () => {
+      //   console.log(fileReader.result);
+      // };
+      this.file = file;
+      const formData = new FormData();
+      formData.append('file', file);
+      // this.textService.submitTextFile(formData).subscribe(
+      //   () => {
+      //     console.log('Upload successful!');
+      //   },
+      //   () => {
+      //     console.log('Upload failed!');
+      //   }
+      // );
+    }
+  }
+
+  downloadFile() {
+    const fileName = 'help.xml';
+    this.textService.getTextFile(fileName).subscribe(
+      (data) => {
+        console.log(data);
+        this.saveFile(data, fileName);
+      },
+      (error) => {
+        console.log('Download error!');
+      }
+    );
+  }
+
+  saveFile(blob, fileName) {
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    link.click();
+    window.URL.revokeObjectURL(url);
   }
 
 }

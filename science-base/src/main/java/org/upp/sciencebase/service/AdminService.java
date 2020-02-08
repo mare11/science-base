@@ -7,8 +7,8 @@ import org.camunda.bpm.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.upp.sciencebase.dto.*;
+import org.upp.sciencebase.model.PaymentMethod;
 import org.upp.sciencebase.model.ScienceArea;
-import org.upp.sciencebase.repository.PaymentMethodRepository;
 import org.upp.sciencebase.repository.ScienceAreaRepository;
 
 import java.util.HashSet;
@@ -25,16 +25,14 @@ public class AdminService {
 
     private final UserTaskService userTaskService;
     private final ScienceAreaRepository scienceAreaRepository;
-    private final PaymentMethodRepository paymentMethodRepository;
     private final RuntimeService runtimeService;
     private final FormService formService;
 
     @Autowired
-    public AdminService(RuntimeService runtimeService, UserTaskService userTaskService, ScienceAreaRepository scienceAreaRepository, PaymentMethodRepository paymentMethodRepository, FormService formService) {
+    public AdminService(RuntimeService runtimeService, UserTaskService userTaskService, ScienceAreaRepository scienceAreaRepository, FormService formService) {
         this.runtimeService = runtimeService;
         this.userTaskService = userTaskService;
         this.scienceAreaRepository = scienceAreaRepository;
-        this.paymentMethodRepository = paymentMethodRepository;
         this.formService = formService;
     }
 
@@ -68,7 +66,7 @@ public class AdminService {
                     MagazineDto.MagazineDtoBuilder dtoBuilder = MagazineDto.builder()
                             .name(variables.get("name").toString())
                             .issn(variables.get("issn").toString())
-                            .paymentMethod(paymentMethodRepository.findByMethodKey(variables.get("paymentMethod").toString()).getMethodValue())
+                            .paymentMethod(PaymentMethod.valueOf(variables.get("paymentMethod").toString()))
                             .formFieldsDto(FormFieldsDto.builder()
                                     .processInstanceId(task.getProcessInstanceId())
                                     .taskId(task.getId())

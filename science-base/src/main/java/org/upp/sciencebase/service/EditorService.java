@@ -51,7 +51,7 @@ public class EditorService {
                         MagazineDto.builder()
                                 .name(magazine.getName())
                                 .issn(magazine.getIssn())
-                                .paymentMethod(magazine.getPaymentMethod().getMethodValue())
+                                .paymentMethod(magazine.getPaymentMethod())
                                 .enabled(magazine.isEnabled())
                                 .taskId(getCorrectionTaskIdForMagazine(username, magazine.getName()))
                                 .build())

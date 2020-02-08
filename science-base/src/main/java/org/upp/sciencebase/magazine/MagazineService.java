@@ -12,19 +12,17 @@ import org.springframework.stereotype.Service;
 import org.upp.sciencebase.dto.FormFieldDto;
 import org.upp.sciencebase.dto.FormFieldsDto;
 import org.upp.sciencebase.dto.FormSubmissionDto;
+import org.upp.sciencebase.dto.MagazineDto;
 import org.upp.sciencebase.model.PaymentMethod;
 import org.upp.sciencebase.model.ScienceArea;
 import org.upp.sciencebase.model.User;
-import org.upp.sciencebase.repository.PaymentMethodRepository;
+import org.upp.sciencebase.repository.MagazineRepository;
 import org.upp.sciencebase.repository.ScienceAreaRepository;
 import org.upp.sciencebase.repository.UserRepository;
 import org.upp.sciencebase.service.UserTaskService;
 import org.upp.sciencebase.util.MultiEnumFormType;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.upp.sciencebase.model.UserRoleEnum.EDITOR;
@@ -39,18 +37,30 @@ public class MagazineService {
     private final FormService formService;
     private final RuntimeService runtimeService;
     private final UserRepository userRepository;
+    private final MagazineRepository magazineRepository;
     private final ScienceAreaRepository scienceAreaRepository;
-    private final PaymentMethodRepository paymentMethodRepository;
 
     @Autowired
-    public MagazineService(FormService formService, TaskService taskService, UserTaskService userTaskService, RuntimeService runtimeService, UserRepository userRepository, ScienceAreaRepository scienceAreaRepository, PaymentMethodRepository paymentMethodRepository) {
+    public MagazineService(FormService formService, TaskService taskService, UserTaskService userTaskService, RuntimeService runtimeService, UserRepository userRepository, MagazineRepository magazineRepository, ScienceAreaRepository scienceAreaRepository) {
         this.formService = formService;
         this.taskService = taskService;
         this.userTaskService = userTaskService;
         this.runtimeService = runtimeService;
         this.userRepository = userRepository;
+        this.magazineRepository = magazineRepository;
         this.scienceAreaRepository = scienceAreaRepository;
-        this.paymentMethodRepository = paymentMethodRepository;
+    }
+
+    public List<MagazineDto> getAllMagazines() {
+        return magazineRepository.findAll().stream()
+                .map(magazine ->
+                        MagazineDto.builder()
+                                .name(magazine.getName())
+                                .issn(magazine.getIssn())
+                                .paymentMethod(magazine.getPaymentMethod())
+                                .enabled(magazine.isEnabled())
+                                .build())
+                .collect(Collectors.toList());
     }
 
     public FormFieldsDto startProcess(String username) {
@@ -59,8 +69,8 @@ public class MagazineService {
 
         Map<String, String> scienceAreas = scienceAreaRepository.findAll().stream()
                 .collect(Collectors.toMap(ScienceArea::getAreaKey, ScienceArea::getAreaValue));
-        Map<String, String> paymentMethods = paymentMethodRepository.findAll().stream()
-                .collect(Collectors.toMap(PaymentMethod::getMethodKey, PaymentMethod::getMethodValue));
+        Map<String, String> paymentMethods = Arrays.stream(PaymentMethod.values())
+                .collect(Collectors.toMap(PaymentMethod::name, PaymentMethod::getLabel));
 
         fieldsDto.getFormFields().forEach(formField -> {
             if (SELECTED_AREAS_FIELD.equals(formField.getId())) {

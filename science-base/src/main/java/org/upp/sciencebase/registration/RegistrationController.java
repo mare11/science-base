@@ -31,7 +31,7 @@ public class RegistrationController {
         return ResponseEntity.ok(userTaskService.startProcessAndGetFormFields(REGISTRATION_PROCESS_KEY, null));
     }
 
-    @PostMapping(value = "/{taskId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/{taskId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> submitForm(@RequestBody List<FormSubmissionDto> submittedFields, @PathVariable String taskId) {
         userTaskService.submitForm(submittedFields, taskId);
         return ResponseEntity.ok().build();

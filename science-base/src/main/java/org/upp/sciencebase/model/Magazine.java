@@ -19,10 +19,10 @@ public class Magazine {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String issn;
 
     @Column(nullable = false)
@@ -31,7 +31,8 @@ public class Magazine {
     @ManyToMany
     private Set<ScienceArea> scienceAreas;
 
-    @ManyToOne
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
 
     @ManyToOne

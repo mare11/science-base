@@ -1,17 +1,18 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {NgModule} from '@angular/core';
 
-import { AppComponent } from './app.component';
-import { AppRoutingModule } from './app-routing.module';
-import { MaterialModule } from './material/material.module';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
-import { SnackBar } from './utils';
-import { HomepageComponent } from './component/homepage/homepage.component';
-import { VerificationComponent } from './component/verification/verification.component';
-import { RegistrationDialogComponent } from './component/registration-dialog/registration-dialog.component';
-import { LoginDialogComponent } from './component/login-dialog/login-dialog.component';
-import { MagazineDialogComponent } from './component/magazine-dialog/magazine-dialog.component';
+import {AppComponent} from './app.component';
+import {AppRoutingModule} from './app-routing.module';
+import {MaterialModule} from './material/material.module';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {HttpClientModule} from '@angular/common/http';
+import {SnackBar} from './utils';
+import {HomepageComponent} from './component/homepage/homepage.component';
+import {VerificationComponent} from './component/verification/verification.component';
+import {RegistrationDialogComponent} from './component/registration-dialog/registration-dialog.component';
+import {LoginDialogComponent} from './component/login-dialog/login-dialog.component';
+import {MagazineDialogComponent} from './component/magazine-dialog/magazine-dialog.component';
+import {TextDialogComponent} from './component/text-dialog/text-dialog.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { MagazineDialogComponent } from './component/magazine-dialog/magazine-di
     LoginDialogComponent,
     VerificationComponent,
     HomepageComponent,
-    MagazineDialogComponent
+    MagazineDialogComponent,
+    TextDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -33,6 +35,7 @@ import { MagazineDialogComponent } from './component/magazine-dialog/magazine-di
   ],
   providers: [],
   bootstrap: [AppComponent],
-  entryComponents: [RegistrationDialogComponent, LoginDialogComponent, MagazineDialogComponent]
+  entryComponents: [RegistrationDialogComponent, LoginDialogComponent, MagazineDialogComponent, TextDialogComponent]
 })
-export class AppModule { }
+export class AppModule {
+}

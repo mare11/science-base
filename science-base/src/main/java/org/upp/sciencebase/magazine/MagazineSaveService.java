@@ -7,9 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.upp.sciencebase.exception.MagazineNameExistsException;
 import org.upp.sciencebase.model.Magazine;
+import org.upp.sciencebase.model.PaymentMethod;
 import org.upp.sciencebase.model.ScienceArea;
 import org.upp.sciencebase.repository.MagazineRepository;
-import org.upp.sciencebase.repository.PaymentMethodRepository;
 import org.upp.sciencebase.repository.ScienceAreaRepository;
 import org.upp.sciencebase.repository.UserRepository;
 
@@ -25,14 +25,12 @@ public class MagazineSaveService implements JavaDelegate {
 
     private final UserRepository userRepository;
     private final ScienceAreaRepository scienceAreaRepository;
-    private final PaymentMethodRepository paymentMethodRepository;
     private final MagazineRepository magazineRepository;
 
     @Autowired
-    public MagazineSaveService(UserRepository userRepository, ScienceAreaRepository scienceAreaRepository, PaymentMethodRepository paymentMethodRepository, MagazineRepository magazineRepository) {
+    public MagazineSaveService(UserRepository userRepository, ScienceAreaRepository scienceAreaRepository, MagazineRepository magazineRepository) {
         this.userRepository = userRepository;
         this.scienceAreaRepository = scienceAreaRepository;
-        this.paymentMethodRepository = paymentMethodRepository;
         this.magazineRepository = magazineRepository;
     }
 
@@ -65,7 +63,7 @@ public class MagazineSaveService implements JavaDelegate {
         magazineBuilder.scienceAreas(areaSet);
 
         String paymentMethod = execution.getVariable("paymentMethod").toString();
-        magazineBuilder.paymentMethod(paymentMethodRepository.findByMethodKey(paymentMethod));
+        magazineBuilder.paymentMethod(PaymentMethod.valueOf(paymentMethod));
 
         String mainEditor = execution.getVariable(PROCESS_INITIATOR_FIELD).toString();
         magazineBuilder.mainEditor(userRepository.findByUsername(mainEditor));
