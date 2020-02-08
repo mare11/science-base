@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.upp.sciencebase.dto.FormFieldsDto;
 import org.upp.sciencebase.dto.FormSubmissionDto;
+import org.upp.sciencebase.dto.TaskDto;
 import org.upp.sciencebase.service.UserService;
 import org.upp.sciencebase.service.UserTaskService;
 
@@ -27,7 +27,7 @@ public class RegistrationController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<FormFieldsDto> startUserRegistration() {
+    public ResponseEntity<TaskDto> startUserRegistration() {
         return ResponseEntity.ok(userTaskService.startProcessAndGetFormFields(REGISTRATION_PROCESS_KEY, null));
     }
 

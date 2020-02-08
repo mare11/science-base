@@ -14,7 +14,6 @@ export class RegistrationDialogComponent {
   private form: FormGroup;
   private formFieldsDto = null;
   private formFields = [];
-  private processInstance = '';
 
   constructor(
     private dialogRef: MatDialogRef<RegistrationDialogComponent>,
@@ -24,7 +23,6 @@ export class RegistrationDialogComponent {
     this.form = new FormGroup({});
     this.formFieldsDto = data;
     this.formFields = data.formFields;
-    this.processInstance = data.processInstanceId;
     this.formFields.forEach((field) => {
       this.form.addControl(field.id, new FormControl('', this.extractValidators(field)));
     });

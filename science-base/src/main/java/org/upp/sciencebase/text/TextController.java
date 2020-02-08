@@ -5,9 +5,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.upp.sciencebase.dto.FormFieldsDto;
 import org.upp.sciencebase.dto.FormSubmissionDto;
-import org.upp.sciencebase.service.UserTaskService;
+import org.upp.sciencebase.dto.TaskDto;
+import org.upp.sciencebase.dto.TextDto;
 
 import java.util.List;
 
@@ -16,27 +16,29 @@ import java.util.List;
 public class TextController {
 
     private final TextService textService;
-    private final UserTaskService userTaskService;
 
     @Autowired
-    public TextController(TextService textService, UserTaskService userTaskService) {
+    public TextController(TextService textService) {
         this.textService = textService;
-        this.userTaskService = userTaskService;
     }
 
     @GetMapping(value = "/{magazineName}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<FormFieldsDto> startNewTextProcess(@PathVariable String magazineName, @RequestParam String username) {
+    public ResponseEntity<TaskDto> startNewTextProcess(@PathVariable String magazineName, @RequestParam String username) {
         return ResponseEntity.ok(textService.startProcess(magazineName, username));
     }
 
-    @GetMapping(value = "/download/{fileName}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    public ResponseEntity<Resource> getTextFile(@PathVariable String fileName) {
-        return ResponseEntity.ok(textService.getTextFile(fileName));
+    @GetMapping(value = "/download/{title}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity<Resource> getTextFile(@PathVariable String title) {
+        return ResponseEntity.ok(textService.getTextFile(title));
     }
 
     @PostMapping(value = "/{taskId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> submitForm(@RequestBody List<FormSubmissionDto> submittedFields, @PathVariable String taskId) {
-        userTaskService.submitForm(submittedFields, taskId);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<TaskDto> submitForm(@RequestBody List<FormSubmissionDto> submittedFields, @PathVariable String taskId) {
+        return ResponseEntity.ok(textService.submitFormAndGetNextTaskData(submittedFields, taskId));
+    }
+
+    @GetMapping("/all/{username}")
+    public ResponseEntity<List<TextDto>> getUserTexts(@PathVariable String username) {
+        return ResponseEntity.ok(textService.getUserTexts(username));
     }
 }

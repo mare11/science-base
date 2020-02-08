@@ -11,8 +11,8 @@ import org.camunda.bpm.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.upp.sciencebase.dto.FormFieldDto;
-import org.upp.sciencebase.dto.FormFieldsDto;
 import org.upp.sciencebase.dto.FormSubmissionDto;
+import org.upp.sciencebase.dto.TaskDto;
 
 import java.util.HashMap;
 import java.util.List;
@@ -36,14 +36,14 @@ public class UserTaskService {
         this.identityService = identityService;
     }
 
-    public FormFieldsDto startProcessAndGetFormFields(String processKey, String username) {
+    public TaskDto startProcessAndGetFormFields(String processKey, String username) {
         identityService.setAuthenticatedUserId(username);
         ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(processKey);
         Task task = taskService.createTaskQuery().processInstanceId(processInstance.getId()).list().get(0);
         TaskFormData taskFormData = formService.getTaskFormData(task.getId());
-        return FormFieldsDto.builder()
-                .processInstanceId(processInstance.getId())
+        return TaskDto.builder()
                 .taskId(task.getId())
+                .taskName(task.getName())
                 .formFields(taskFormData.getFormFields()
                         .stream()
                         .map(FormFieldDto::new)
@@ -70,7 +70,7 @@ public class UserTaskService {
         log.info("Task with id: {} completed", taskId);
     }
 
-    public List<Task> getUserTasksForSpecificProcess(String username, String processKey) {
+    public List<Task> getActiveUserTasksForSpecificProcess(String username, String processKey) {
         log.info("Fetching user tasks for username: {}", username);
         return taskService.createTaskQuery()
                 .processDefinitionKey(processKey)

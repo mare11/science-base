@@ -6,6 +6,7 @@ import org.upp.sciencebase.model.User;
 import org.upp.sciencebase.model.UserRoleEnum;
 
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -14,7 +15,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     User findByRole(UserRoleEnum role);
 
-    List<User> findByUserEnabledTrueAndRoleAndScienceAreas_AreaKeyIn(UserRoleEnum role, List<String> areaKeys);
+    Set<User> findByUserEnabledTrueAndRoleAndScienceAreas_AreaKeyIn(UserRoleEnum role, List<String> areaKeys);
 
-    List<User> findByUserEnabledTrueAndReviewerTrueAndReviewerEnabledTrueAndScienceAreas_AreaKeyIn(List<String> areaKeys);
+    Set<User> findByUserEnabledTrueAndReviewerTrueAndReviewerEnabledTrueAndScienceAreas_AreaKeyIn(List<String> areaKeys);
 }

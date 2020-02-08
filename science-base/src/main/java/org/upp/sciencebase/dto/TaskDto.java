@@ -1,18 +1,18 @@
 package org.upp.sciencebase.dto;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class TaskDto {
-    private String taskId;
-    private String name;
-    private String assignee;
-    private String variable;
+    String taskId;
+    String taskName;
+    List<FormFieldDto> formFields;
 }

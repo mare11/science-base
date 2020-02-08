@@ -7,12 +7,11 @@ import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.upp.sciencebase.dto.FormFieldDto;
-import org.upp.sciencebase.dto.FormFieldsDto;
-import org.upp.sciencebase.dto.MagazineDto;
+import org.upp.sciencebase.dto.*;
 import org.upp.sciencebase.model.ScienceArea;
 import org.upp.sciencebase.repository.MagazineRepository;
 import org.upp.sciencebase.repository.ScienceAreaRepository;
+import org.upp.sciencebase.repository.TextRepository;
 import org.upp.sciencebase.util.MultiEnumFormType;
 
 import java.util.ArrayList;
@@ -21,8 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.upp.sciencebase.util.ProcessUtil.NEW_MAGAZINE_PROCESS_KEY;
-import static org.upp.sciencebase.util.ProcessUtil.SELECTED_AREAS_FIELD;
+import static org.upp.sciencebase.util.ProcessUtil.*;
 
 @Slf4j
 @Service
@@ -34,15 +32,17 @@ public class EditorService {
     private final RuntimeService runtimeService;
     private final ScienceAreaRepository scienceAreaRepository;
     private final MagazineRepository magazineRepository;
+    private final TextRepository textRepository;
 
     @Autowired
-    public EditorService(UserTaskService userTaskService, TaskService taskService, FormService formService, RuntimeService runtimeService, ScienceAreaRepository scienceAreaRepository, MagazineRepository magazineRepository) {
+    public EditorService(UserTaskService userTaskService, TaskService taskService, FormService formService, RuntimeService runtimeService, ScienceAreaRepository scienceAreaRepository, MagazineRepository magazineRepository, TextRepository textRepository) {
         this.userTaskService = userTaskService;
         this.taskService = taskService;
         this.formService = formService;
         this.runtimeService = runtimeService;
         this.scienceAreaRepository = scienceAreaRepository;
         this.magazineRepository = magazineRepository;
+        this.textRepository = textRepository;
     }
 
     public List<MagazineDto> getMagazines(String username) {
@@ -53,13 +53,13 @@ public class EditorService {
                                 .issn(magazine.getIssn())
                                 .paymentMethod(magazine.getPaymentMethod())
                                 .enabled(magazine.isEnabled())
-                                .taskId(getCorrectionTaskIdForMagazine(username, magazine.getName()))
+                                .taskDto(getCorrectionTaskDataForMagazine(username, magazine.getName()))
                                 .build())
                 .collect(Collectors.toList());
     }
 
 
-    public FormFieldsDto getCorrectionTaskFormFields(String taskId) {
+    public TaskDto getCorrectionTaskData(String taskId) {
         Task task = taskService.createTaskQuery()
                 .taskId(taskId)
                 .singleResult();
@@ -76,21 +76,76 @@ public class EditorService {
             }
             formFieldDtos.add(fieldDto);
         });
-        return FormFieldsDto.builder()
-                .processInstanceId(task.getProcessInstanceId())
+        return TaskDto.builder()
                 .taskId(task.getId())
+                .taskName(task.getName())
                 .formFields(formFieldDtos)
                 .build();
     }
 
-    private String getCorrectionTaskIdForMagazine(String username, String magazineName) {
-        List<Task> userTasks = userTaskService.getUserTasksForSpecificProcess(username, NEW_MAGAZINE_PROCESS_KEY);
+    public List<TextDto> getMagazineTexts(String username) {
+        return textRepository.findByMagazine_MainEditor_Username(username).stream()
+                .map(text ->
+                        TextDto.builder()
+                                .title(text.getTitle())
+                                .keyTerms(text.getKeyTerms())
+                                .apstract(text.getApstract())
+                                .taskDto(getActiveTaskDataForText(username, text.getTitle()))
+                                .build())
+                .collect(Collectors.toList());
+    }
+
+    public TaskDto getMagazineTextForm(String taskId) {
+        Task task = taskService.createTaskQuery()
+                .taskId(taskId)
+                .singleResult();
+        List<FormFieldDto> formFieldDtos = new ArrayList<>();
+        formService.getTaskFormData(task.getId()).getFormFields().forEach(formField -> {
+            FormFieldDto fieldDto = new FormFieldDto(formField);
+            if (SELECT_REVIEWERS_TASK.equals(task.getTaskDefinitionKey())) {
+                fieldDto.setType(new MultiEnumFormType(getReviewersForArea(task.getProcessInstanceId())));
+            }
+            formFieldDtos.add(fieldDto);
+        });
+        return TaskDto.builder()
+                .taskId(task.getId())
+                .taskName(task.getName())
+                .formFields(formFieldDtos)
+                .build();
+    }
+
+    private TaskDto getCorrectionTaskDataForMagazine(String username, String magazineName) {
+        List<Task> userTasks = userTaskService.getActiveUserTasksForSpecificProcess(username, NEW_MAGAZINE_PROCESS_KEY);
         for (Task task : userTasks) {
             String name = runtimeService.getVariable(task.getProcessInstanceId(), "name").toString();
             if (magazineName.equals(name)) {
-                return task.getId();
+                return TaskDto.builder()
+                        .taskId(task.getId())
+                        .taskName(task.getName())
+                        .build();
             }
         }
         return null;
+    }
+
+    private TaskDto getActiveTaskDataForText(String username, String textTitle) {
+        List<Task> userTasks = userTaskService.getActiveUserTasksForSpecificProcess(username, NEW_TEXT_PROCESS_KEY);
+        for (Task task : userTasks) {
+            String title = String.valueOf(runtimeService.getVariable(task.getProcessInstanceId(), "title"));
+            if (textTitle.equals(title)) {
+                return TaskDto.builder()
+                        .taskId(task.getId())
+                        .taskName(task.getName())
+                        .build();
+            }
+        }
+        return null;
+    }
+
+    private Map<String, String> getReviewersForArea(String processInstanceId) {
+        Map<String, Object> variables = runtimeService.getVariables(processInstanceId);
+        List<UserDto> reviewersForArea = (List<UserDto>) variables.get("reviewersForArea");
+        return reviewersForArea.stream()
+                .collect(Collectors.toMap(UserDto::getUsername, UserDto::getFullName));
     }
 }

@@ -18,6 +18,5 @@ public class MagazineDto {
     private Set<String> scienceAreas;
     private PaymentMethod paymentMethod;
     private boolean enabled;
-    private String taskId;
-    private FormFieldsDto formFieldsDto;
+    private TaskDto taskDto;
 }

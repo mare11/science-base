@@ -37,7 +37,7 @@ public class AdminService {
     }
 
     public List<ReviewerDto> getNonEnabledReviewers() {
-        List<Task> taskList = userTaskService.getUserTasksForSpecificProcess(ADMIN_USERNAME, REGISTRATION_PROCESS_KEY);
+        List<Task> taskList = userTaskService.getActiveUserTasksForSpecificProcess(ADMIN_USERNAME, REGISTRATION_PROCESS_KEY);
 
         return taskList.stream()
                 .map(task -> {
@@ -58,7 +58,7 @@ public class AdminService {
     }
 
     public List<MagazineDto> getNonApprovedMagazines() {
-        List<Task> taskList = userTaskService.getUserTasksForSpecificProcess(ADMIN_USERNAME, NEW_MAGAZINE_PROCESS_KEY);
+        List<Task> taskList = userTaskService.getActiveUserTasksForSpecificProcess(ADMIN_USERNAME, NEW_MAGAZINE_PROCESS_KEY);
 
         return taskList.stream()
                 .map(task -> {
@@ -67,9 +67,9 @@ public class AdminService {
                             .name(variables.get("name").toString())
                             .issn(variables.get("issn").toString())
                             .paymentMethod(PaymentMethod.valueOf(variables.get("paymentMethod").toString()))
-                            .formFieldsDto(FormFieldsDto.builder()
-                                    .processInstanceId(task.getProcessInstanceId())
+                            .taskDto(TaskDto.builder()
                                     .taskId(task.getId())
+                                    .taskName(task.getName())
                                     .formFields(formService.getTaskFormData(task.getId()).getFormFields()
                                             .stream()
                                             .map(FormFieldDto::new)

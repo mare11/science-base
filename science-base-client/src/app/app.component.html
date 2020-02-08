@@ -1,1 +1,19 @@
+<mat-toolbar>
+  <button mat-button routerLink="/">
+    <h1 class="white-header">Home</h1>
+  </button>
+  <button mat-button (click)="openRegistrationDialog()" *ngIf="!userDto">
+    <h1>Sign Up</h1>
+  </button>
+  <button mat-button (click)="openLoginDialog()" *ngIf="!userDto">
+    <h1>Login</h1>
+  </button>
+  <button mat-button *ngIf="userDto" [matMenuTriggerFor]="menu">
+    <mat-icon>person</mat-icon>
+    {{userDto.username}}
+  </button>
+  <mat-menu #menu="matMenu">
+    <button mat-menu-item (click)="logoutUser()">Logout</button>
+  </mat-menu>
+</mat-toolbar>
 <router-outlet></router-outlet>

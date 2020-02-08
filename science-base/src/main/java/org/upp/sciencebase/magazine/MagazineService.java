@@ -10,9 +10,9 @@ import org.camunda.bpm.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.upp.sciencebase.dto.FormFieldDto;
-import org.upp.sciencebase.dto.FormFieldsDto;
 import org.upp.sciencebase.dto.FormSubmissionDto;
 import org.upp.sciencebase.dto.MagazineDto;
+import org.upp.sciencebase.dto.TaskDto;
 import org.upp.sciencebase.model.PaymentMethod;
 import org.upp.sciencebase.model.ScienceArea;
 import org.upp.sciencebase.model.User;
@@ -63,8 +63,8 @@ public class MagazineService {
                 .collect(Collectors.toList());
     }
 
-    public FormFieldsDto startProcess(String username) {
-        FormFieldsDto fieldsDto = userTaskService.startProcessAndGetFormFields(NEW_MAGAZINE_PROCESS_KEY, username);
+    public TaskDto startProcess(String username) {
+        TaskDto fieldsDto = userTaskService.startProcessAndGetFormFields(NEW_MAGAZINE_PROCESS_KEY, username);
         log.info("Initializing science areas and payment method fields for new magazine process!");
 
         Map<String, String> scienceAreas = scienceAreaRepository.findAll().stream()
@@ -86,7 +86,7 @@ public class MagazineService {
         return fieldsDto;
     }
 
-    public FormFieldsDto submitFormAndGetNextTaskFields(List<FormSubmissionDto> submittedFields, String taskId) {
+    public TaskDto submitFormAndGetNextTaskData(List<FormSubmissionDto> submittedFields, String taskId) {
         Task previousTask = taskService.createTaskQuery()
                 .taskId(taskId)
                 .singleResult();
@@ -96,9 +96,7 @@ public class MagazineService {
                 .active()
                 .singleResult();
 
-        // TODO replace this with checking assignees of the old and the new task
-        //  once authentication and tokens are implemented, fetch username from jwt
-        if (newTask.getAssignee() == null) {
+        if (newTask.getAssignee().equals(previousTask.getAssignee())) {
             Map<String, Object> variables = runtimeService.getVariables(newTask.getProcessInstanceId());
             List<String> selectedAreas = (List<String>) variables.get("selectedAreas");
             List<FormFieldDto> formFields = new ArrayList<>();
@@ -107,23 +105,23 @@ public class MagazineService {
                 FormFieldDto fieldDto = new FormFieldDto(formField);
                 if (SELECTED_EDITORS_FIELD.equals(formField.getId())) {
                     Map<String, String> values = new HashMap<>();
-                    List<User> editors = userRepository.findByUserEnabledTrueAndRoleAndScienceAreas_AreaKeyIn(EDITOR, selectedAreas);
+                    Set<User> editors = userRepository.findByUserEnabledTrueAndRoleAndScienceAreas_AreaKeyIn(EDITOR, selectedAreas);
                     editors.forEach(editor ->
                             values.put(editor.getUsername(), editor.getFullName()));
                     fieldDto.setType(new MultiEnumFormType(values));
                 }
                 if (SELECTED_REVIEWERS_FIELD.equals(formField.getId())) {
                     Map<String, String> values = new HashMap<>();
-                    List<User> reviewers = userRepository.findByUserEnabledTrueAndReviewerTrueAndReviewerEnabledTrueAndScienceAreas_AreaKeyIn(selectedAreas);
+                    Set<User> reviewers = userRepository.findByUserEnabledTrueAndReviewerTrueAndReviewerEnabledTrueAndScienceAreas_AreaKeyIn(selectedAreas);
                     reviewers.forEach(reviewer ->
                             values.put(reviewer.getUsername(), reviewer.getFullName()));
                     fieldDto.setType(new MultiEnumFormType(values));
                 }
                 formFields.add(fieldDto);
             });
-            return FormFieldsDto.builder()
-                    .processInstanceId(newTask.getId())
+            return TaskDto.builder()
                     .taskId(newTask.getId())
+                    .taskName(newTask.getName())
                     .formFields(formFields)
                     .build();
         }

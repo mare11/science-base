@@ -1,9 +1,6 @@
 package org.upp.sciencebase.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -43,5 +40,10 @@ public class Magazine {
 
     @ManyToMany
     private Set<User> areaReviewers;
+
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @OneToMany(mappedBy = "magazine")
+    private Set<Text> texts;
 
 }

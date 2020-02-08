@@ -13,6 +13,7 @@ import {RegistrationDialogComponent} from './component/registration-dialog/regis
 import {LoginDialogComponent} from './component/login-dialog/login-dialog.component';
 import {MagazineDialogComponent} from './component/magazine-dialog/magazine-dialog.component';
 import {TextDialogComponent} from './component/text-dialog/text-dialog.component';
+import { MagazineOverviewComponent } from './component/magazine-overview/magazine-overview.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import {TextDialogComponent} from './component/text-dialog/text-dialog.component
     VerificationComponent,
     HomepageComponent,
     MagazineDialogComponent,
-    TextDialogComponent
+    TextDialogComponent,
+    MagazineOverviewComponent
   ],
   imports: [
     BrowserModule,

@@ -46,7 +46,7 @@
             </camunda:validation>
           </camunda:formField>
           <camunda:formField id="file" label="Upload file" type="file" />
-          <camunda:formField id="hasCoauthors" label="Add co-authors" type="boolean" />
+          <camunda:formField id="hasCoauthors" label="Add coauthors" type="boolean" />
         </camunda:formData>
         <camunda:taskListener event="create">
           <camunda:script scriptFormat="javascript">task.getExecution().setVariable("hasCoauthors", false);</camunda:script>
@@ -72,7 +72,7 @@
     <bpmn:sequenceFlow id="SequenceFlow_1nm0ehf" sourceRef="Task_0r5c9b7" targetRef="Task_1cudgs5" />
     <bpmn:sequenceFlow id="SequenceFlow_1li51pe" sourceRef="Task_0vofu37" targetRef="Task_0r5c9b7" />
     <bpmn:sequenceFlow id="SequenceFlow_1dvduon" sourceRef="Task_17wee1c" targetRef="ServiceTask_16mr4a1" />
-    <bpmn:userTask id="Task_17wee1c" name="Add co-author for &#39;${title}&#39;" camunda:assignee="${processInitiator}">
+    <bpmn:userTask id="Task_17wee1c" name="Add coauthor for &#39;${title}&#39;" camunda:assignee="${processInitiator}">
       <bpmn:extensionElements>
         <camunda:formData>
           <camunda:formField id="coauthorFirstName" label="First name" type="string">
@@ -85,7 +85,7 @@
               <camunda:constraint name="required" />
             </camunda:validation>
           </camunda:formField>
-          <camunda:formField id="coauthorEmail" label="E-mail" type="string">
+          <camunda:formField id="coauthorEmail" label="E-mail" type="email">
             <camunda:validation>
               <camunda:constraint name="required" />
             </camunda:validation>
@@ -100,10 +100,15 @@
               <camunda:constraint name="required" />
             </camunda:validation>
           </camunda:formField>
-          <camunda:formField id="continue" label="Add another co-author" type="boolean" />
+          <camunda:formField id="continue" label="Add another coauthor" type="boolean" />
         </camunda:formData>
         <camunda:taskListener event="create">
-          <camunda:script scriptFormat="javascript">task.getExecution().setVariable("continue", false);</camunda:script>
+          <camunda:script scriptFormat="javascript">task.getExecution().setVariable("coauthorFirstName", null);
+task.getExecution().setVariable("coauthorLastName", null);
+task.getExecution().setVariable("coauthorEmail", null);
+task.getExecution().setVariable("coauthorCountry", null);
+task.getExecution().setVariable("coauthorCity", null);
+task.getExecution().setVariable("continue", false);</camunda:script>
         </camunda:taskListener>
       </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_066nzsy</bpmn:incoming>
@@ -114,7 +119,7 @@
       <bpmn:outgoing>SequenceFlow_1vtyltv</bpmn:outgoing>
       <bpmn:outgoing>SequenceFlow_05zxodr</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="SequenceFlow_1vtyltv" name="select another co-author" sourceRef="ExclusiveGateway_0zzm4kj" targetRef="ExclusiveGateway_1ne82ub">
+    <bpmn:sequenceFlow id="SequenceFlow_1vtyltv" name="select another coauthor" sourceRef="ExclusiveGateway_0zzm4kj" targetRef="ExclusiveGateway_1ne82ub">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${continue}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:exclusiveGateway id="ExclusiveGateway_1ne82ub">
@@ -123,23 +128,17 @@
       <bpmn:outgoing>SequenceFlow_066nzsy</bpmn:outgoing>
       <bpmn:outgoing>SequenceFlow_123roiw</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="SequenceFlow_066nzsy" name="magazine has co-authors" sourceRef="ExclusiveGateway_1ne82ub" targetRef="Task_17wee1c">
+    <bpmn:sequenceFlow id="SequenceFlow_066nzsy" name="magazine has coauthors" sourceRef="ExclusiveGateway_1ne82ub" targetRef="Task_17wee1c">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${hasCoauthors}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="SequenceFlow_05zxodr" name="co-authors entered" sourceRef="ExclusiveGateway_0zzm4kj" targetRef="Task_1ahbpt5">
+    <bpmn:sequenceFlow id="SequenceFlow_05zxodr" name="all coauthors selected" sourceRef="ExclusiveGateway_0zzm4kj" targetRef="Task_1ahbpt5">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!continue}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="SequenceFlow_123roiw" name="no co-authors" sourceRef="ExclusiveGateway_1ne82ub" targetRef="Task_1ahbpt5">
+    <bpmn:sequenceFlow id="SequenceFlow_123roiw" name="no coauthors" sourceRef="ExclusiveGateway_1ne82ub" targetRef="Task_1ahbpt5">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!hasCoauthors}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="SequenceFlow_0wlwvjy" sourceRef="Task_19fppwk" targetRef="Task_1l5s795" />
-    <bpmn:task id="Task_1l5s795" name="Send e-mails">
-      <bpmn:incoming>SequenceFlow_0wlwvjy</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_0ahjcau</bpmn:outgoing>
-    </bpmn:task>
-    <bpmn:sequenceFlow id="SequenceFlow_1h6u01v" sourceRef="Task_1ahbpt5" targetRef="Task_19fppwk" />
-    <bpmn:sequenceFlow id="SequenceFlow_0ahjcau" sourceRef="Task_1l5s795" targetRef="UserTask_1vbo4g4" />
-    <bpmn:userTask id="UserTask_1vbo4g4" name="Approve new text for &#39;${selectedMagData.name}&#39;" camunda:assignee="${selectedMagData.mainEditor}">
+    <bpmn:sequenceFlow id="SequenceFlow_1h6u01v" sourceRef="Task_1ahbpt5" targetRef="ExclusiveGateway_008w15s" />
+    <bpmn:userTask id="UserTask_1vbo4g4" name="Approve new text for &#39;${selectedMag}&#39;" camunda:assignee="${mainEditor}">
       <bpmn:extensionElements>
         <camunda:formData>
           <camunda:formField id="title" label="Title" type="string">
@@ -164,8 +163,11 @@
           </camunda:formField>
           <camunda:formField id="rejected" label="Reject (not thematically appropriate)" type="boolean" />
         </camunda:formData>
+        <camunda:taskListener event="create">
+          <camunda:script scriptFormat="javascript">task.getExecution().setVariable("rejected", false);</camunda:script>
+        </camunda:taskListener>
       </bpmn:extensionElements>
-      <bpmn:incoming>SequenceFlow_0ahjcau</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_0kf5ch3</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1fngjh2</bpmn:outgoing>
     </bpmn:userTask>
     <bpmn:sequenceFlow id="SequenceFlow_1fngjh2" sourceRef="UserTask_1vbo4g4" targetRef="ExclusiveGateway_1yule06" />
@@ -181,10 +183,10 @@
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${rejected}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:endEvent id="EndEvent_0z7xqie">
-      <bpmn:incoming>SequenceFlow_0qizyma</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_11myu89</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="SequenceFlow_0a59vm6" sourceRef="Task_1cqitii" targetRef="ExclusiveGateway_1hk3buu" />
-    <bpmn:userTask id="Task_1cqitii" name="Check text format for &#39;${title}&#39;" camunda:assignee="${selectedMagData.mainEditor}">
+    <bpmn:userTask id="Task_1cqitii" name="Check text format for &#39;${title}&#39;" camunda:assignee="${mainEditor}">
       <bpmn:extensionElements>
         <camunda:formData>
           <camunda:formField id="file" label="File" type="string" />
@@ -214,13 +216,9 @@
       </bpmn:timerEventDefinition>
     </bpmn:boundaryEvent>
     <bpmn:endEvent id="EndEvent_01gqlxn">
-      <bpmn:incoming>SequenceFlow_0sqtrht</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_1ivtakg</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="SequenceFlow_1qy7w3j" name="deadline passed" sourceRef="IntermediateThrowEvent_05yaat1" targetRef="ServiceTask_1v2zko4" />
-    <bpmn:task id="Task_0ahlmzp" name="Send e-mail notification">
-      <bpmn:incoming>SequenceFlow_1ivtakg</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_0sqtrht</bpmn:outgoing>
-    </bpmn:task>
     <bpmn:userTask id="UserTask_1m0v9kj" name="Re-format document for text &#39;${title}&#39;" camunda:assignee="${processInitiator}">
       <bpmn:extensionElements>
         <camunda:formData>
@@ -258,7 +256,7 @@
         </camunda:formData>
         <camunda:taskListener expression="${task.getExecution().setVariable(&#34;authorDeadline&#34;, dateTime().plusMinutes(authorTimeframe).toDate())}" event="create" />
         <camunda:taskListener event="complete">
-          <camunda:script scriptFormat="Groovy">task.getExecution().setVariable("rejected", false);
+          <camunda:script scriptFormat="javascript">task.getExecution().setVariable("rejected", false);
 task.getExecution().setVariable("editorComment", null);
 task.getExecution().setVariable("authorTimeframe", null);</camunda:script>
         </camunda:taskListener>
@@ -266,125 +264,22 @@ task.getExecution().setVariable("authorTimeframe", null);</camunda:script>
       <bpmn:incoming>SequenceFlow_06i8yav</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0x0vlka</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:sequenceFlow id="SequenceFlow_0x0vlka" sourceRef="UserTask_1m0v9kj" targetRef="Task_19fppwk" />
-    <bpmn:sequenceFlow id="SequenceFlow_0sqtrht" sourceRef="Task_0ahlmzp" targetRef="EndEvent_01gqlxn" />
-    <bpmn:task id="Task_12bwl7k" name="Send e-mail notification">
-      <bpmn:incoming>SequenceFlow_11myu89</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_0qizyma</bpmn:outgoing>
-    </bpmn:task>
-    <bpmn:sequenceFlow id="SequenceFlow_0qizyma" sourceRef="Task_12bwl7k" targetRef="EndEvent_0z7xqie" />
+    <bpmn:sequenceFlow id="SequenceFlow_0x0vlka" sourceRef="UserTask_1m0v9kj" targetRef="ExclusiveGateway_008w15s" />
     <bpmn:sequenceFlow id="SequenceFlow_1ylawm2" sourceRef="Task_07lsabj" targetRef="ExclusiveGateway_0ceyei9" />
-    <bpmn:sequenceFlow id="SequenceFlow_1fc3lmf" sourceRef="Task_06gmusu" targetRef="ExclusiveGateway_0rn5k1i" />
-    <bpmn:userTask id="Task_06gmusu" name="Select reviewers for text &#39;${title}&#39;" camunda:assignee="${editorForArea}">
+    <bpmn:sequenceFlow id="SequenceFlow_1fc3lmf" sourceRef="select_reviewers_task" targetRef="UserTask_0epk6er" />
+    <bpmn:userTask id="select_reviewers_task" name="Select reviewers for text &#39;${title}&#39;" camunda:assignee="${editorForArea}">
       <bpmn:extensionElements>
         <camunda:formData>
-          <camunda:formField id="firstRev" label="First Reviewer" type="enum">
+          <camunda:formField id="reviewerList" label="Reviewers" type="multi-enum">
             <camunda:validation>
               <camunda:constraint name="required" />
             </camunda:validation>
           </camunda:formField>
-          <camunda:formField id="secondRev" label="Second Reviewer" type="enum">
-            <camunda:validation>
-              <camunda:constraint name="required" />
-            </camunda:validation>
-          </camunda:formField>
-          <camunda:formField id="addRev" label="Add additional reviewer" type="boolean" />
         </camunda:formData>
-        <camunda:taskListener event="create">
-          <camunda:script scriptFormat="Groovy">taskFormData = task.getExecution().getProcessEngineServices().getFormService().getTaskFormData(task.getId());
-reviewers= task.getExecution().getVariable("reviewersForArea");
-
-formFields = taskFormData. getFormFields();
-if(formFields!=null){
-   for(field in formFields){
-       if( field.getId() == "firstRev" || field.getId() == "secondRev" ){
-           items = field.getType().getValues();
-           for(rev in reviewers){
-               items.put(rev.id, rev.name);
-           }
-       }
-   }
-}</camunda:script>
-        </camunda:taskListener>
-        <camunda:taskListener event="complete">
-          <camunda:script scriptFormat="Groovy">taskFormData = task.getExecution().getProcessEngineServices().getFormService().getTaskFormData(task.getId());
-reviewerIds= new java.util.ArrayList();
-
-formFields = taskFormData. getFormFields();
-if(formFields!=null){
-   for(field in formFields){
-        if(field.getId() == "firstRev" || field.getId() == "secondRev"){
-            reviewerIds.add(field.getValue().value);
-        }
-   }
-}
-
-task.getExecution().setVariable("reviewerList", reviewerIds);</camunda:script>
-        </camunda:taskListener>
       </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_0stvl5k</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1fc3lmf</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:exclusiveGateway id="ExclusiveGateway_0rn5k1i">
-      <bpmn:incoming>SequenceFlow_1fc3lmf</bpmn:incoming>
-      <bpmn:incoming>SequenceFlow_137pmen</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_1pniph6</bpmn:outgoing>
-      <bpmn:outgoing>SequenceFlow_06gk8xi</bpmn:outgoing>
-    </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="SequenceFlow_1pniph6" name="additional reviewer" sourceRef="ExclusiveGateway_0rn5k1i" targetRef="Task_0ayjixt">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${addRev}</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
-    <bpmn:userTask id="Task_0ayjixt" name="Add additional reviewer for text &#39;${title}&#39;" camunda:assignee="${editorForArea}">
-      <bpmn:extensionElements>
-        <camunda:formData>
-          <camunda:formField id="additionalRev" label="Additional Reviewer" type="enum">
-            <camunda:validation>
-              <camunda:constraint name="required" />
-            </camunda:validation>
-          </camunda:formField>
-          <camunda:formField id="addRev" label="Add another reviewer" type="boolean" />
-        </camunda:formData>
-        <camunda:taskListener event="create">
-          <camunda:script scriptFormat="Groovy">taskFormData = task.getExecution().getProcessEngineServices().getFormService().getTaskFormData(task.getId());
-reviewers= task.getExecution().getVariable("reviewersForArea");
-
-formFields = taskFormData. getFormFields();
-if(formFields!=null){
-   for(field in formFields){
-       if( field.getId() == "additionalRev"){
-           items = field.getType().getValues();
-           for(rev in reviewers){
-               items.put(rev.id, rev.name);
-           }
-       }
-   }
-}
-
-task.getExecution().setVariable("addRev", false);</camunda:script>
-        </camunda:taskListener>
-        <camunda:taskListener event="complete">
-          <camunda:script scriptFormat="Groovy">taskFormData = task.getExecution().getProcessEngineServices().getFormService().getTaskFormData(task.getId());
-reviewerIds= task.getExecution().getVariable("reviewerList");
-
-formFields = taskFormData. getFormFields();
-if(formFields!=null){
-   for(field in formFields){
-       if(field.getId() == "additionalRev"){
-            reviewerIds.add(field.getValue());
-       }
-   }
-}
-
-task.getExecution().setVariable("reviewerList", reviewerIds);</camunda:script>
-        </camunda:taskListener>
-      </bpmn:extensionElements>
-      <bpmn:incoming>SequenceFlow_1pniph6</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_137pmen</bpmn:outgoing>
-    </bpmn:userTask>
-    <bpmn:sequenceFlow id="SequenceFlow_06gk8xi" name="all reviewers are selected" sourceRef="ExclusiveGateway_0rn5k1i" targetRef="UserTask_0epk6er">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!addRev}</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="SequenceFlow_137pmen" sourceRef="Task_0ayjixt" targetRef="ExclusiveGateway_0rn5k1i" />
     <bpmn:userTask id="Task_0jfht5x" name="Review text &#39;${title}&#39;" camunda:assignee="${reviewer}">
       <bpmn:extensionElements>
         <camunda:formData>
@@ -444,7 +339,7 @@ task.getExecution().setVariable("timedOutReviewers", timedOutReviewers);</camund
       </bpmn:timerEventDefinition>
     </bpmn:boundaryEvent>
     <bpmn:sequenceFlow id="SequenceFlow_0rrvc5w" name="deadline passed" sourceRef="IntermediateThrowEvent_09xhy49" targetRef="UserTask_098ndyi" />
-    <bpmn:userTask id="UserTask_098ndyi" name="Select reviewer replacement for text &#39;${title}&#39;" camunda:assignee="${selectedMagData.mainEditor}">
+    <bpmn:userTask id="UserTask_098ndyi" name="Select reviewer replacement for text &#39;${title}&#39;" camunda:assignee="${mainEditor}">
       <bpmn:extensionElements>
         <camunda:formData>
           <camunda:formField id="additionalRev" label="Additional Reviewer" type="enum">
@@ -482,7 +377,7 @@ task.getExecution().setVariable("reviewerList", reviewerIds);</camunda:script>
     </bpmn:userTask>
     <bpmn:sequenceFlow id="SequenceFlow_01ejqcl" sourceRef="Task_0jfht5x" targetRef="Task_1e2apu6" />
     <bpmn:sequenceFlow id="SequenceFlow_0wr8c9f" sourceRef="Task_1e2apu6" targetRef="UserTask_038hl60" />
-    <bpmn:userTask id="Task_1e2apu6" name="Check text review for &#39;${title}&#39;" camunda:assignee="${selectedMagData.mainEditor}">
+    <bpmn:userTask id="Task_1e2apu6" name="Check text review for &#39;${title}&#39;" camunda:assignee="${mainEditor}">
       <bpmn:extensionElements>
         <camunda:formData>
           <camunda:formField id="reviewedBy" label="Reviewer" type="string" defaultValue="${review.reviewedBy}" />
@@ -495,31 +390,12 @@ task.getExecution().setVariable("reviewerList", reviewerIds);</camunda:script>
       <bpmn:outgoing>SequenceFlow_0wr8c9f</bpmn:outgoing>
       <bpmn:multiInstanceLoopCharacteristics camunda:collection="${reviews}" camunda:elementVariable="review" />
     </bpmn:userTask>
-    <bpmn:scriptTask id="Task_07lsabj" name="Get editor and reviewers for selected science area" scriptFormat="Groovy">
-      <bpmn:incoming>SequenceFlow_1bq040q</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_1ylawm2</bpmn:outgoing>
-      <bpmn:script>selectedArea = execution.getVariable("scienceArea");
-areaEditors = execution.getVariable("areaEditors");
-areaReviewers = execution.getVariable("areaReviewers");
-
-editorForArea = areaEditors[selectedArea];
-reviewersForArea = areaReviewers[selectedArea];
-
-if(!editorForArea){
-    editorForArea = execution.getVariable("selectedMagData").mainEditor;
-}
-
-execution.setVariable("editorForArea", editorForArea);
-execution.setVariable("reviewersForArea", reviewersForArea);
-execution.setVariable("hasReviewers", !reviewersForArea.isEmpty());
-execution.setVariable("reviews", []);</bpmn:script>
-    </bpmn:scriptTask>
     <bpmn:exclusiveGateway id="ExclusiveGateway_0ceyei9">
       <bpmn:incoming>SequenceFlow_1ylawm2</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0stvl5k</bpmn:outgoing>
       <bpmn:outgoing>SequenceFlow_056tlbo</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="SequenceFlow_0stvl5k" name="reviewers available" sourceRef="ExclusiveGateway_0ceyei9" targetRef="Task_06gmusu">
+    <bpmn:sequenceFlow id="SequenceFlow_0stvl5k" name="reviewers available" sourceRef="ExclusiveGateway_0ceyei9" targetRef="select_reviewers_task">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${hasReviewers}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="SequenceFlow_056tlbo" name="no available reviewers" sourceRef="ExclusiveGateway_0ceyei9" targetRef="UserTask_006v81n">
@@ -533,7 +409,7 @@ execution.setVariable("reviews", []);</bpmn:script>
     <bpmn:sequenceFlow id="SequenceFlow_1s1lqnn" name="text is accepted with updates" sourceRef="ExclusiveGateway_1n2dyxp" targetRef="Task_1wlc87k">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${decision == 'action2' || decision == 'action3'}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:userTask id="UserTask_006v81n" name="Review text &#39;${title}&#39;" camunda:assignee="${selectedMagData.mainEditor}">
+    <bpmn:userTask id="UserTask_006v81n" name="Review text &#39;${title}&#39;" camunda:assignee="${mainEditor}">
       <bpmn:extensionElements>
         <camunda:formData>
           <camunda:formField id="file" label="File" type="string" />
@@ -552,7 +428,7 @@ task.getExecution().setVariable("reviewCommentAuthor", null);</camunda:script>
       <bpmn:outgoing>SequenceFlow_1jtkcmc</bpmn:outgoing>
     </bpmn:userTask>
     <bpmn:sequenceFlow id="SequenceFlow_1jtkcmc" sourceRef="UserTask_006v81n" targetRef="UserTask_038hl60" />
-    <bpmn:userTask id="UserTask_038hl60" name="Make a decision for text &#39;${title}&#39;" camunda:assignee="${selectedMagData.mainEditor}">
+    <bpmn:userTask id="UserTask_038hl60" name="Make a decision for text &#39;${title}&#39;" camunda:assignee="${mainEditor}">
       <bpmn:extensionElements>
         <camunda:formData>
           <camunda:formField id="decision" label="Decision" type="enum">
@@ -583,7 +459,7 @@ task.getExecution().setVariable("reviewCommentAuthor", null);</camunda:script>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="SequenceFlow_1u8482a" sourceRef="Task_0idf62a" targetRef="EndEvent_0t5wm5w" />
     <bpmn:sequenceFlow id="SequenceFlow_0sly7vj" sourceRef="Task_1wlc87k" targetRef="SubProcess_1h0prbh" />
-    <bpmn:userTask id="Task_1wlc87k" name="Enter correction timeframe for &#39;${title}&#39;" camunda:assignee="${selectedMagData.mainEditor}">
+    <bpmn:userTask id="Task_1wlc87k" name="Enter correction timeframe for &#39;${title}&#39;" camunda:assignee="${mainEditor}">
       <bpmn:extensionElements>
         <camunda:formData>
           <camunda:formField id="correctionTimeframe" label="Correction timeframe (in minutes)" type="long">
@@ -672,7 +548,7 @@ task.getExecution().setVariable("reviewCommentAuthor", null);</camunda:script>
       <bpmn:incoming>SequenceFlow_12rb5lt</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="SequenceFlow_12rb5lt" sourceRef="Task_04wjrn7" targetRef="EndEvent_1hm1qoz" />
-    <bpmn:userTask id="UserTask_136ygle" name="Make a decision for corrected text &#39;${title}&#39;" camunda:assignee="${selectedMagData.mainEditor}">
+    <bpmn:userTask id="UserTask_136ygle" name="Make a decision for corrected text &#39;${title}&#39;" camunda:assignee="${mainEditor}">
       <bpmn:extensionElements>
         <camunda:formData>
           <camunda:formField id="file" type="string" />
@@ -713,7 +589,7 @@ task.getExecution().setVariable("reviewCommentAuthor", null);</camunda:script>
     <bpmn:sequenceFlow id="SequenceFlow_0go72rk" name="correction needed again" sourceRef="ExclusiveGateway_0efz7a1" targetRef="Task_1wlc87k">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${finalDecision == 'finalAction2'}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:userTask id="UserTask_0epk6er" name="Enter review timeframe for &#39;${title}&#39;" camunda:assignee="${selectedMagData.mainEditor}">
+    <bpmn:userTask id="UserTask_0epk6er" name="Enter review timeframe for &#39;${title}&#39;" camunda:assignee="${mainEditor}">
       <bpmn:extensionElements>
         <camunda:formData>
           <camunda:formField id="reviewTimeframe" label="Review timeframe (in minutes)" type="long">
@@ -732,8 +608,8 @@ task.getExecution().setVariable("reviewRecommendation", null);</camunda:script>
         </camunda:taskListener>
         <camunda:taskListener expression="${task.getExecution().setVariable(&#34;reviewDeadline&#34;, null)}" event="create" />
       </bpmn:extensionElements>
-      <bpmn:incoming>SequenceFlow_06gk8xi</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_1lal9tn</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_1fc3lmf</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0xnmcpc</bpmn:outgoing>
     </bpmn:userTask>
     <bpmn:sequenceFlow id="SequenceFlow_0xnmcpc" sourceRef="UserTask_0epk6er" targetRef="Task_0jfht5x" />
@@ -746,21 +622,16 @@ task.getExecution().setVariable("reviewRecommendation", null);</camunda:script>
       <bpmn:outgoing>SequenceFlow_0237yc6</bpmn:outgoing>
     </bpmn:task>
     <bpmn:sequenceFlow id="SequenceFlow_0237yc6" sourceRef="Task_1lwyoti" targetRef="EndEvent_04sjt5k" />
-    <bpmn:serviceTask id="Task_19fppwk" name="Save data" camunda:expression="${execution.setVariable(&#34;saved&#34;, true)}">
-      <bpmn:incoming>SequenceFlow_1h6u01v</bpmn:incoming>
-      <bpmn:incoming>SequenceFlow_0x0vlka</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_0wlwvjy</bpmn:outgoing>
-    </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="SequenceFlow_11myu89" sourceRef="Task_0981mha" targetRef="Task_12bwl7k" />
-    <bpmn:serviceTask id="Task_0981mha" name="Save data" camunda:expression="${execution.setVariable(&#34;saved&#34;, true)}">
+    <bpmn:sequenceFlow id="SequenceFlow_11myu89" sourceRef="Task_0981mha" targetRef="EndEvent_0z7xqie" />
+    <bpmn:serviceTask id="Task_0981mha" name="Reject text and send email" camunda:class="org.upp.sciencebase.text.RejectTextService">
       <bpmn:incoming>SequenceFlow_14ql3od</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_11myu89</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="ServiceTask_1v2zko4" name="Save data" camunda:expression="${execution.setVariable(&#34;saved&#34;, true)}">
+    <bpmn:serviceTask id="ServiceTask_1v2zko4" name="Reject and send email" camunda:class="org.upp.sciencebase.text.RejectTextService">
       <bpmn:incoming>SequenceFlow_1qy7w3j</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1ivtakg</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="SequenceFlow_1ivtakg" sourceRef="ServiceTask_1v2zko4" targetRef="Task_0ahlmzp" />
+    <bpmn:sequenceFlow id="SequenceFlow_1ivtakg" sourceRef="ServiceTask_1v2zko4" targetRef="EndEvent_01gqlxn" />
     <bpmn:serviceTask id="ServiceTask_1v9silr" name="Save data" camunda:expression="${execution.setVariable(&#34;saved&#34;, true)}">
       <bpmn:incoming>SequenceFlow_0gqsdiw</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1ko2fps</bpmn:outgoing>
@@ -800,16 +671,26 @@ execution.setVariable("reviewerList", reviewerIds);</bpmn:script>
       <bpmn:incoming>SequenceFlow_1nm0ehf</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1d2fsrv</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="Task_1ahbpt5" name="Send e-mails">
+    <bpmn:serviceTask id="Task_1ahbpt5" name="Send e-mails" camunda:class="org.upp.sciencebase.text.NewTextEmailService">
       <bpmn:incoming>SequenceFlow_05zxodr</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_123roiw</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1h6u01v</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="ServiceTask_16mr4a1" name="Save data" camunda:expression="${execution.setVariable(&#34;saved&#34;, true)}">
+    <bpmn:serviceTask id="ServiceTask_16mr4a1" name="Save data" camunda:class="org.upp.sciencebase.text.SaveCoauthorService">
       <bpmn:incoming>SequenceFlow_1dvduon</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0lvjna5</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:sequenceFlow id="SequenceFlow_0lvjna5" sourceRef="ServiceTask_16mr4a1" targetRef="ExclusiveGateway_0zzm4kj" />
+    <bpmn:exclusiveGateway id="ExclusiveGateway_008w15s">
+      <bpmn:incoming>SequenceFlow_0x0vlka</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_1h6u01v</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0kf5ch3</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="SequenceFlow_0kf5ch3" sourceRef="ExclusiveGateway_008w15s" targetRef="UserTask_1vbo4g4" />
+    <bpmn:serviceTask id="Task_07lsabj" name="Get editor and reviewers for selected science area" camunda:class="org.upp.sciencebase.text.GetScienceAreaRedactionService">
+      <bpmn:incoming>SequenceFlow_1bq040q</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1ylawm2</bpmn:outgoing>
+    </bpmn:serviceTask>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="new_text">
@@ -880,7 +761,7 @@ execution.setVariable("reviewerList", reviewerIds);</bpmn:script>
         <di:waypoint x="1180" y="260" />
         <di:waypoint x="1180" y="342" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1382" y="226" width="88" height="27" />
+          <dc:Bounds x="1391" y="226" width="71" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="ExclusiveGateway_1ne82ub_di" bpmnElement="ExclusiveGateway_1ne82ub" isMarkerVisible="true">
@@ -890,14 +771,14 @@ execution.setVariable("reviewerList", reviewerIds);</bpmn:script>
         <di:waypoint x="1205" y="367" />
         <di:waypoint x="1300" y="367" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1207" y="373" width="88" height="27" />
+          <dc:Bounds x="1217" y="373" width="69" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_05zxodr_di" bpmnElement="SequenceFlow_05zxodr">
         <di:waypoint x="1675" y="367" />
         <di:waypoint x="1760" y="367" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1691" y="336" width="53" height="27" />
+          <dc:Bounds x="1688" y="336" width="63" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_123roiw_di" bpmnElement="SequenceFlow_123roiw">
@@ -906,23 +787,12 @@ execution.setVariable("reviewerList", reviewerIds);</bpmn:script>
         <di:waypoint x="1810" y="470" />
         <di:waypoint x="1810" y="407" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1474" y="453" width="68" height="14" />
+          <dc:Bounds x="1476" y="453" width="65" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="SequenceFlow_0wlwvjy_di" bpmnElement="SequenceFlow_0wlwvjy">
-        <di:waypoint x="2030" y="367" />
-        <di:waypoint x="2120" y="367" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Task_1l5s795_di" bpmnElement="Task_1l5s795">
-        <dc:Bounds x="2120" y="327" width="100" height="80" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_1h6u01v_di" bpmnElement="SequenceFlow_1h6u01v">
         <di:waypoint x="1860" y="367" />
-        <di:waypoint x="1930" y="367" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="SequenceFlow_0ahjcau_di" bpmnElement="SequenceFlow_0ahjcau">
-        <di:waypoint x="2220" y="367" />
-        <di:waypoint x="2290" y="367" />
+        <di:waypoint x="2065" y="367" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="UserTask_1vbo4g4_di" bpmnElement="UserTask_1vbo4g4">
         <dc:Bounds x="2290" y="327" width="100" height="80" />
@@ -949,7 +819,7 @@ execution.setVariable("reviewerList", reviewerIds);</bpmn:script>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="EndEvent_0z7xqie_di" bpmnElement="EndEvent_0z7xqie">
-        <dc:Bounds x="2742" y="542" width="36" height="36" />
+        <dc:Bounds x="2642" y="542" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_0a59vm6_di" bpmnElement="SequenceFlow_0a59vm6">
         <di:waypoint x="2790" y="367" />
@@ -982,7 +852,7 @@ execution.setVariable("reviewerList", reviewerIds);</bpmn:script>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="EndEvent_01gqlxn_di" bpmnElement="EndEvent_01gqlxn">
-        <dc:Bounds x="3362" y="582" width="36" height="36" />
+        <dc:Bounds x="3282" y="582" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_1qy7w3j_di" bpmnElement="SequenceFlow_1qy7w3j">
         <di:waypoint x="2978" y="600" />
@@ -991,64 +861,26 @@ execution.setVariable("reviewerList", reviewerIds);</bpmn:script>
           <dc:Bounds x="2984" y="582" width="81" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Task_0ahlmzp_di" bpmnElement="Task_0ahlmzp">
-        <dc:Bounds x="3220" y="560" width="100" height="80" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="UserTask_1m0v9kj_di" bpmnElement="UserTask_1m0v9kj">
         <dc:Bounds x="2860" y="520" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_0x0vlka_di" bpmnElement="SequenceFlow_0x0vlka">
         <di:waypoint x="2910" y="600" />
         <di:waypoint x="2910" y="660" />
-        <di:waypoint x="1980" y="660" />
-        <di:waypoint x="1980" y="407" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="SequenceFlow_0sqtrht_di" bpmnElement="SequenceFlow_0sqtrht">
-        <di:waypoint x="3320" y="600" />
-        <di:waypoint x="3362" y="600" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Task_12bwl7k_di" bpmnElement="Task_12bwl7k">
-        <dc:Bounds x="2590" y="520" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="SequenceFlow_0qizyma_di" bpmnElement="SequenceFlow_0qizyma">
-        <di:waypoint x="2690" y="560" />
-        <di:waypoint x="2742" y="560" />
+        <di:waypoint x="2090" y="660" />
+        <di:waypoint x="2090" y="392" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_1ylawm2_di" bpmnElement="SequenceFlow_1ylawm2">
         <di:waypoint x="3190" y="367" />
         <di:waypoint x="3235" y="367" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_1fc3lmf_di" bpmnElement="SequenceFlow_1fc3lmf">
-        <di:waypoint x="3460" y="367" />
-        <di:waypoint x="3495" y="367" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="UserTask_1wq7aae_di" bpmnElement="Task_06gmusu">
-        <dc:Bounds x="3360" y="327" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ExclusiveGateway_0rn5k1i_di" bpmnElement="ExclusiveGateway_0rn5k1i" isMarkerVisible="true">
-        <dc:Bounds x="3495" y="342" width="50" height="50" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="SequenceFlow_1pniph6_di" bpmnElement="SequenceFlow_1pniph6">
-        <di:waypoint x="3500" y="372" />
-        <di:waypoint x="3500" y="560" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="3446" y="456" width="48" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="UserTask_1br3oob_di" bpmnElement="Task_0ayjixt">
-        <dc:Bounds x="3470" y="560" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="SequenceFlow_06gk8xi_di" bpmnElement="SequenceFlow_06gk8xi">
-        <di:waypoint x="3545" y="367" />
+        <di:waypoint x="3520" y="367" />
         <di:waypoint x="3640" y="367" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="3535" y="336" width="81" height="27" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="SequenceFlow_137pmen_di" bpmnElement="SequenceFlow_137pmen">
-        <di:waypoint x="3540" y="560" />
-        <di:waypoint x="3540" y="372" />
-      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="UserTask_1wq7aae_di" bpmnElement="select_reviewers_task">
+        <dc:Bounds x="3420" y="327" width="100" height="80" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="UserTask_1d1m2bb_di" bpmnElement="Task_0jfht5x">
         <dc:Bounds x="3800" y="327" width="100" height="80" />
       </bpmndi:BPMNShape>
@@ -1076,17 +908,14 @@ execution.setVariable("reviewerList", reviewerIds);</bpmn:script>
       <bpmndi:BPMNShape id="UserTask_0i2q9s6_di" bpmnElement="Task_1e2apu6">
         <dc:Bounds x="4020" y="327" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ScriptTask_1k9zekw_di" bpmnElement="Task_07lsabj">
-        <dc:Bounds x="3090" y="327" width="100" height="80" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ExclusiveGateway_0ceyei9_di" bpmnElement="ExclusiveGateway_0ceyei9" isMarkerVisible="true">
         <dc:Bounds x="3235" y="342" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_0stvl5k_di" bpmnElement="SequenceFlow_0stvl5k">
         <di:waypoint x="3285" y="367" />
-        <di:waypoint x="3360" y="367" />
+        <di:waypoint x="3420" y="367" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="3299" y="336" width="48" height="27" />
+          <dc:Bounds x="3329" y="336" width="48" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_056tlbo_di" bpmnElement="SequenceFlow_056tlbo">
@@ -1266,12 +1095,9 @@ execution.setVariable("reviewerList", reviewerIds);</bpmn:script>
         <di:waypoint x="6110" y="367" />
         <di:waypoint x="6242" y="367" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="ServiceTask_0aws3c5_di" bpmnElement="Task_19fppwk">
-        <dc:Bounds x="1930" y="327" width="100" height="80" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_11myu89_di" bpmnElement="SequenceFlow_11myu89">
         <di:waypoint x="2530" y="560" />
-        <di:waypoint x="2590" y="560" />
+        <di:waypoint x="2642" y="560" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="ServiceTask_1i4lowj_di" bpmnElement="Task_0981mha">
         <dc:Bounds x="2430" y="520" width="100" height="80" />
@@ -1281,7 +1107,7 @@ execution.setVariable("reviewerList", reviewerIds);</bpmn:script>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_1ivtakg_di" bpmnElement="SequenceFlow_1ivtakg">
         <di:waypoint x="3180" y="600" />
-        <di:waypoint x="3220" y="600" />
+        <di:waypoint x="3282" y="600" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="ServiceTask_1v9silr_di" bpmnElement="ServiceTask_1v9silr">
         <dc:Bounds x="4880" y="560" width="100" height="80" />
@@ -1335,6 +1161,16 @@ execution.setVariable("reviewerList", reviewerIds);</bpmn:script>
         <di:waypoint x="1570" y="367" />
         <di:waypoint x="1625" y="367" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ExclusiveGateway_008w15s_di" bpmnElement="ExclusiveGateway_008w15s" isMarkerVisible="true">
+        <dc:Bounds x="2065" y="342" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0kf5ch3_di" bpmnElement="SequenceFlow_0kf5ch3">
+        <di:waypoint x="2115" y="367" />
+        <di:waypoint x="2290" y="367" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_1xg8u5s_di" bpmnElement="Task_07lsabj">
+        <dc:Bounds x="3090" y="327" width="100" height="80" />
+      </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>

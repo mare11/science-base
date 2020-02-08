@@ -16,7 +16,6 @@ export class TextDialogComponent {
   private form: FormGroup;
   private formFieldsDto = null;
   private formFields = [];
-  private processInstance = '';
 
   constructor(
     private dialogRef: MatDialogRef<TextDialogComponent>,
@@ -27,15 +26,28 @@ export class TextDialogComponent {
   }
 
   initForm(data) {
-    this.title = data.title;
+    this.title = data.taskName;
     this.form = new FormGroup({});
     this.formFieldsDto = data;
     this.formFields = data.formFields;
-    this.processInstance = data.processInstanceId;
     this.formFields.forEach(field => {
-      this.form.addControl(field.id, new FormControl(field.value, this.extractValidators(field)));
+      this.form.addControl(field.id, new FormControl({
+        value: field.value,
+        disabled: this.isDisabled(field)
+      }, this.extractValidators(field)));
     });
     console.log(this.form);
+  }
+
+  isDisabled(field) {
+    if (field.validationConstraints) {
+      for (const constraint of field.validationConstraints) {
+        if (constraint.name === 'readonly') {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   extractValidators(field) {
@@ -71,8 +83,8 @@ export class TextDialogComponent {
     this.textService.submitForm(this.formFieldsDto.taskId, o).subscribe(
       res => {
         console.log(res);
-        this.dialogRef.close();
-        this.snackBar.showSnackBar('Text added!');
+        this.snackBar.showSnackBar('Text saved!');
+        this.dialogRef.close(res);
       },
       err => {
         this.snackBar.showSnackBar('An error occurred.');

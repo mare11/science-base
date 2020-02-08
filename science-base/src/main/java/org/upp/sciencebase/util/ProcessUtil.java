@@ -12,4 +12,5 @@ public class ProcessUtil {
     public static final String SCIENCE_AREA_FIELD = "scienceArea";
     public static final String PAYMENT_METHOD_FIELD = "paymentMethod";
     public static final String SELECTED_MAG_FIELD = "selectedMag";
+    public static final String SELECT_REVIEWERS_TASK = "select_reviewers_task";
 }

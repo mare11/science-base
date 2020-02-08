@@ -6,17 +6,26 @@ import {HttpClient} from '@angular/common/http';
 })
 export class EditorService {
 
-  usersBaseUrl = '/api/editors/';
+  editorsBaseUrl = '/api/editors/';
   formFieldsUrl = 'form/';
 
   constructor(private http: HttpClient) {
   }
 
   getMagazines(username) {
-    return this.http.get(this.usersBaseUrl.concat(username));
+    return this.http.get(this.editorsBaseUrl.concat(username));
   }
 
   getCorrectionTaskForm(username) {
-    return this.http.get(this.usersBaseUrl.concat(this.formFieldsUrl).concat(username));
+    return this.http.get(this.editorsBaseUrl.concat(this.formFieldsUrl).concat(username));
   }
+
+  getMagazineTexts(username) {
+    return this.http.get(this.editorsBaseUrl.concat('texts/').concat(username));
+  }
+
+  getMagazineTextForm(taskId) {
+    return this.http.get(this.editorsBaseUrl.concat('texts/form/').concat(taskId));
+  }
+
 }

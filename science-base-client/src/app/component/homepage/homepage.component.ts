@@ -1,10 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material';
 import {RegistrationService} from 'src/app/service/registration/registration.service';
-import {RegistrationDialogComponent} from '../registration-dialog/registration-dialog.component';
 import {SnackBar} from 'src/app/utils';
 import {LoginService} from 'src/app/service/login/login.service';
-import {LoginDialogComponent} from '../login-dialog/login-dialog.component';
 import {Router} from '@angular/router';
 import {AdminService} from 'src/app/service/admin/admin.service';
 import {MagazineDialogComponent} from '../magazine-dialog/magazine-dialog.component';
@@ -27,6 +25,7 @@ export class HomepageComponent implements OnInit {
   nonApprovedMagazines: any;
   magazines: [];
   file: any;
+  texts: [];
 
   constructor(
     private registrationService: RegistrationService, private loginService: LoginService,
@@ -46,50 +45,6 @@ export class HomepageComponent implements OnInit {
     );
   }
 
-  openRegistrationDialog() {
-    this.registrationService.startProcess().subscribe(
-      (res: any) => {
-        console.log(res);
-        this.dialog.open(RegistrationDialogComponent,
-          {
-            width: '500px',
-            disableClose: true,
-            autoFocus: true,
-            data: res
-          });
-
-      },
-      err => {
-        this.snackBar.showSnackBar('An error occurred.');
-      });
-  }
-
-  openLoginDialog() {
-    const dialogRef = this.dialog.open(LoginDialogComponent,
-      {
-        width: '500px',
-        disableClose: true,
-        autoFocus: true,
-      });
-
-    dialogRef.afterClosed().subscribe(
-      (data) => {
-        if (data) {
-          this.loginService.setLocalStorageItem(data);
-          this.snackBar.showSnackBar('Logged in successfully!');
-        }
-      }
-    );
-  }
-
-  logoutUser() {
-    setTimeout(() => {
-      this.loginService.removeLocalStorageItem();
-      this.router.navigate(['/']);
-      this.snackBar.showSnackBar('Logged out successfully!');
-    }, 500);
-  }
-
   getUserTasks() {
     this.magazineService.getAllMagazines().subscribe(
       (data: []) => {
@@ -98,10 +53,13 @@ export class HomepageComponent implements OnInit {
       }
     );
     if (this.userDto) {
-      if (this.userDto.role === 'ADMIN') {
+      if (this.userDto.role === 'USER') {
+        this.getUserTexts();
+      } else if (this.userDto.role === 'ADMIN') {
         this.getNonEnabledReviewers();
         this.getNonApprovedMagazines();
       } else if (this.userDto.role === 'EDITOR') {
+        this.getMagazineTexts();
         // TODO
         // this.editorService.getMagazines(this.userDto.username).subscribe(
         //   (data: []) => {
@@ -224,68 +182,79 @@ export class HomepageComponent implements OnInit {
       });
   }
 
-  openNewTextDialog(magazineName) {
-    this.textService.startProcess(magazineName, this.userDto.username).subscribe(
-      (res: any) => {
-        res.title = 'Add new text';
+  getMagazineTexts() {
+    this.editorService.getMagazineTexts(this.userDto.username).subscribe(
+      (data: []) => {
+        this.texts = data;
+      }
+    );
+  }
+
+  getUserTexts() {
+    this.textService.getUserTexts(this.userDto.username).subscribe(
+      (data: []) => {
+        this.texts = data;
+      }
+    );
+  }
+
+  openTextActionDialog(taskDto) {
+    this.editorService.getMagazineTextForm(taskDto.taskId).subscribe(
+      res => {
         console.log(res);
-        this.dialog.open(TextDialogComponent,
+        const dialogRef = this.dialog.open(TextDialogComponent,
           {
             width: '500px',
             disableClose: true,
             autoFocus: true,
             data: res
           });
+        dialogRef.afterClosed().subscribe(
+          data => {
+            if (data) {
+              this.openNextTaskDialog(data);
+            }
+          }
+        );
       });
   }
 
-  uploadFile(event) {
-    const file = event.target.files[0];
-    if (file) {
-      console.log(file);
-      if (file.size > 131072) {
-        alert('Exceeded allowed file size! Maximum size is 128 KB.');
-        return;
-      }
-      // const fileReader = new FileReader();
-      // fileReader.readAsDataURL(file);
-      // fileReader.onload = () => {
-      //   console.log(fileReader.result);
-      // };
-      this.file = file;
-      const formData = new FormData();
-      formData.append('file', file);
-      // this.textService.submitTextFile(formData).subscribe(
-      //   () => {
-      //     console.log('Upload successful!');
-      //   },
-      //   () => {
-      //     console.log('Upload failed!');
-      //   }
-      // );
-    }
+  openNewTextDialog(magazineName) {
+    this.textService.startProcess(magazineName, this.userDto.username).subscribe(
+      (res: any) => {
+        console.log(res);
+        const dialogRef = this.dialog.open(TextDialogComponent,
+          {
+            width: '500px',
+            disableClose: true,
+            autoFocus: true,
+            data: res
+          });
+        dialogRef.afterClosed().subscribe(
+          data => {
+            if (data) {
+              this.openNextTaskDialog(data);
+            }
+          }
+        );
+      });
   }
 
-  downloadFile() {
-    const fileName = 'help.xml';
-    this.textService.getTextFile(fileName).subscribe(
-      (data) => {
-        console.log(data);
-        this.saveFile(data, fileName);
-      },
-      (error) => {
-        console.log('Download error!');
+  openNextTaskDialog(taskDto) {
+    const coauthorDialog = this.dialog.open(TextDialogComponent,
+      {
+        width: '500px',
+        disableClose: true,
+        autoFocus: true,
+        data: taskDto
+      });
+    coauthorDialog.afterClosed().subscribe(
+      data => {
+        if (data) {
+          this.openNextTaskDialog(data);
+        }
       }
     );
-  }
-
-  saveFile(blob, fileName) {
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = fileName;
-    link.click();
-    window.URL.revokeObjectURL(url);
   }
 
 }

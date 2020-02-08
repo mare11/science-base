@@ -7,6 +7,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.upp.sciencebase.model.Text;
 import org.upp.sciencebase.model.User;
 
 import javax.mail.internet.MimeMessage;
@@ -27,9 +28,31 @@ public class EmailService {
     }
 
     @Async
+    public void sendNewTextNotificationMail(User user, Text text) {
+        log.info("Sending email to user: {}", user.getUsername());
+        try {
+            MimeMessage mail = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mail, false, "utf-8");
+
+            helper.setTo(user.getEmail());
+            helper.setFrom(mailUsername);
+            helper.setSubject("Science Base - New Text Notification");
+            String message = "Hello " + user.getUsername() + ",<br><br>"
+                    + "New text '" + text.getTitle() + "' has been submitted for magazine '" + text.getMagazine().getName()
+                    + "' by author: " + user.getFullName() + ".<br><br>"
+                    + "Regards, <br><br>" + "<i>Science Base Team</i>";
+            helper.setText(message, true);
+            mailSender.send(mail);
+
+            log.info("Email sent to user! (username: {}, email: {})", user.getUsername(), user.getEmail());
+        } catch (Exception e) {
+            log.error("Error while sending email to user! (username: {}, email: {})", user.getUsername(), user.getEmail());
+        }
+    }
+
+    @Async
     public void sendRegistrationMail(User user, String processInstanceId) {
         log.info("Sending email to user: {}", user.getUsername());
-
         try {
             MimeMessage mail = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mail, false, "utf-8");
@@ -44,8 +67,9 @@ public class EmailService {
             helper.setText(message, true);
             mailSender.send(mail);
 
-            log.info("Email sent to user: {}", user.getUsername());
+            log.info("Email sent to user! (username: {}, email: {})", user.getUsername(), user.getEmail());
         } catch (Exception e) {
+            log.error("Error while sending email to user! (username: {}, email: {})", user.getUsername(), user.getEmail());
         }
     }
 

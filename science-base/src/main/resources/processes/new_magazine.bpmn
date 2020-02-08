@@ -5,7 +5,7 @@
       <bpmn:outgoing>SequenceFlow_0lkve3r</bpmn:outgoing>
     </bpmn:startEvent>
     <bpmn:sequenceFlow id="SequenceFlow_0lkve3r" sourceRef="StartEvent_1" targetRef="Task_1g448dc" />
-    <bpmn:userTask id="Task_1g448dc" name="Enter magazine data">
+    <bpmn:userTask id="Task_1g448dc" name="Enter magazine data" camunda:assignee="${processInitiator}">
       <bpmn:extensionElements>
         <camunda:formData>
           <camunda:formField id="name" label="Name" type="string">
@@ -40,7 +40,7 @@
     <bpmn:endEvent id="EndEvent_0suqeqf">
       <bpmn:incoming>SequenceFlow_0ylc73w</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:userTask id="Task_0bm8ugx" name="Select editors and reviewers for &#39;${name}&#39;">
+    <bpmn:userTask id="Task_0bm8ugx" name="Select editors and reviewers for &#39;${name}&#39;" camunda:assignee="${processInitiator}">
       <bpmn:extensionElements>
         <camunda:formData>
           <camunda:formField id="selectedEditors" label="Magazine Editors" type="multi-enum" />

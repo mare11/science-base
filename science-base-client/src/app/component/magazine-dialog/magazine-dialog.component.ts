@@ -15,7 +15,6 @@ export class MagazineDialogComponent {
   private form: FormGroup;
   private formFieldsDto = null;
   private formFields = [];
-  private processInstance = '';
 
   constructor(
     private dialogRef: MatDialogRef<MagazineDialogComponent>,
@@ -30,7 +29,6 @@ export class MagazineDialogComponent {
     this.form = new FormGroup({});
     this.formFieldsDto = data;
     this.formFields = data.formFields;
-    this.processInstance = data.processInstanceId;
     this.formFields.forEach(field => {
       this.form.addControl(field.id, new FormControl({
         value: field.value,

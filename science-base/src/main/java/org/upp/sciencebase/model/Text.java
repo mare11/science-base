@@ -1,11 +1,9 @@
 package org.upp.sciencebase.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -19,9 +17,28 @@ public class Text {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String fileName;
+    private String title;
 
-    @Column(nullable = false, columnDefinition = "blob")
-    private byte[] content;
+    @Column(nullable = false)
+    private String keyTerms;
 
+    @Column(nullable = false)
+    private String apstract;
+
+    @Column(columnDefinition = "blob")
+    private byte[] file;
+
+    @ManyToOne
+    private ScienceArea scienceArea;
+
+    @ManyToOne
+    private User author;
+
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @OneToMany(mappedBy = "text")
+    private Set<Author> coauthors;
+
+    @ManyToOne
+    private Magazine magazine;
 }

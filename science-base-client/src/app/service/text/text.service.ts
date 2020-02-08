@@ -28,4 +28,8 @@ export class TextService {
   submitForm(taskId, value) {
     return this.http.post(this.textBaseUrl.concat(taskId), value);
   }
+
+  getUserTexts(username) {
+    return this.http.get(this.textBaseUrl.concat('all/').concat(username));
+  }
 }
