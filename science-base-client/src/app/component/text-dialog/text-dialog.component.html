@@ -5,14 +5,23 @@
       <mat-checkbox *ngSwitchCase="'boolean'" [formControlName]="field.id" labelPosition="before" color="primary">
         {{field.label}}:
       </mat-checkbox>
-      <div *ngSwitchCase="'file'">
-        <mat-label>{{field.label}}</mat-label>
-        <button mat-stroked-button color="primary" (click)="inputFile.click()" class="ml-3 mr-3">
-          Choose
-        </button>
-        <label *ngIf="file">{{file.name}}</label>
-        <input hidden type="file" #inputFile (change)="uploadFile($event)" [formControlName]="field.id"/>
-        <br/>
+      <div *ngSwitchCase="'file'" class="mb-3">
+        <div *ngIf="field.value">
+          <mat-label>{{field.label}}</mat-label>
+          <label class="ml-3 mr-3">{{field.value}}</label>
+          <button mat-stroked-button color="primary" (click)="downloadFile()">
+            Download
+          </button>
+        </div>
+        <div *ngIf="!field.value">
+          <mat-label>{{field.label}}</mat-label>
+          <button mat-stroked-button color="primary" (click)="inputFile.click()" class="ml-3 mr-3">
+            Choose
+          </button>
+          <label>{{file ? file.name : 'No file selected'}}</label>
+          <input hidden type="file" #inputFile (change)="chooseFile($event)" [formControlName]="field.id"
+                 accept="application/pdf"/>
+        </div>
       </div>
       <mat-form-field *ngSwitchCase="'long'" appearance="outline">
         <mat-label>{{field.label}}</mat-label>

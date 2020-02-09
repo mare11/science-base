@@ -198,10 +198,11 @@ export class HomepageComponent implements OnInit {
     );
   }
 
-  openTextActionDialog(taskDto) {
+  openTextActionDialog(textTitle, taskDto) {
     this.editorService.getMagazineTextForm(taskDto.taskId).subscribe(
-      res => {
+      (res: any) => {
         console.log(res);
+        res.textTitle = textTitle;
         const dialogRef = this.dialog.open(TextDialogComponent,
           {
             width: '500px',
@@ -210,8 +211,9 @@ export class HomepageComponent implements OnInit {
             data: res
           });
         dialogRef.afterClosed().subscribe(
-          data => {
+          (data: any) => {
             if (data) {
+              data.textTitle = textTitle;
               this.openNextTaskDialog(data);
             }
           }
@@ -251,6 +253,7 @@ export class HomepageComponent implements OnInit {
     coauthorDialog.afterClosed().subscribe(
       data => {
         if (data) {
+          data.textTitle = taskDto.textTitle;
           this.openNextTaskDialog(data);
         }
       }

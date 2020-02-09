@@ -125,7 +125,7 @@
       <td>{{text.keyTerms}}</td>
       <td>
         <button *ngIf="text.taskDto" mat-icon-button color="primary"
-                (click)="openTextActionDialog(text.taskDto)">
+                (click)="openTextActionDialog(text.title, text.taskDto)">
           <mat-icon>edit</mat-icon>
         </button>
       </td>

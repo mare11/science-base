@@ -12,16 +12,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.upp.sciencebase.dto.*;
 import org.upp.sciencebase.exception.BadRequestException;
 import org.upp.sciencebase.model.Magazine;
 import org.upp.sciencebase.model.ScienceArea;
-import org.upp.sciencebase.model.Text;
 import org.upp.sciencebase.repository.MagazineRepository;
 import org.upp.sciencebase.repository.TextRepository;
 import org.upp.sciencebase.service.UserTaskService;
 import org.upp.sciencebase.util.MultiEnumFormType;
 
+import java.io.File;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -40,6 +44,7 @@ public class TextService {
     private final UserTaskService userTaskService;
     private final TextRepository textRepository;
     private final MagazineRepository magazineRepository;
+    private final String path;
 
     @Autowired
     public TextService(TaskService taskService, FormService formService, RuntimeService runtimeService, UserTaskService userTaskService, TextRepository textRepository, MagazineRepository magazineRepository) {
@@ -49,6 +54,12 @@ public class TextService {
         this.userTaskService = userTaskService;
         this.textRepository = textRepository;
         this.magazineRepository = magazineRepository;
+        URL resource = this.getClass().getClassLoader().getResource("");
+        File file = new File(resource.getPath() + "/files");
+        if (!file.exists()) {
+            file.mkdir();
+        }
+        this.path = file.getPath();
     }
 
     public TaskDto startProcess(String magazineName, String username) {
@@ -92,28 +103,37 @@ public class TextService {
                 .build();
     }
 
-    public Resource getTextFile(String title) {
-        log.info("Reading file for text: {}", title);
-        Text text = textRepository.findByTitle(title);
-        if (ObjectUtils.isEmpty(text) || ObjectUtils.isEmpty(text.getFile())) {
+    public void saveTextFile(String title, MultipartFile file, boolean overwrite) {
+        if (file.isEmpty()) {
+            log.error("File is empty!");
             throw new BadRequestException();
         }
-        return new ByteArrayResource(text.getFile());
+        if (Files.exists(Path.of(getFileName(title))) && !overwrite) {
+            log.error("File for text: {} already exists!", title);
+            throw new BadRequestException();
+        }
+        try {
+            log.info("Saving file for text: {}", title);
+            Files.write(Path.of(getFileName(title)), file.getBytes());
+        } catch (Exception e) {
+            log.error("Error while saving file for text!");
+            throw new BadRequestException();
+        }
     }
 
-//    public void submitTextFile(MultipartFile file) {
-//        String fileName = file.getOriginalFilename();
-//        try {
-//            Text text = Text.builder()
-//                    .fileName(fileName)
-//                    .content(file.getBytes())
-//                    .build();
-//            textRepository.save(text);
-//        } catch (IOException e) {
-//            log.info("Error while reading file: {}", fileName);
-//        }
-//        log.info("Submitted text file: {}", fileName);
-//    }
+    public Resource getTextFile(String taskId) {
+        try {
+            Task task = taskService.createTaskQuery()
+                    .taskId(taskId)
+                    .singleResult();
+            String title = runtimeService.getVariable(task.getProcessInstanceId(), "title").toString();
+            log.info("Reading file for text: {}", title);
+            return new ByteArrayResource(Files.readAllBytes(Path.of(getFileName(title))));
+        } catch (Exception e) {
+            log.error("Error while reading file for text!");
+            throw new BadRequestException();
+        }
+    }
 
     public TaskDto submitFormAndGetNextTaskData(List<FormSubmissionDto> submittedFields, String taskId) {
         Task previousTask = taskService.createTaskQuery()
@@ -189,5 +209,9 @@ public class TextService {
             }
         }
         return null;
+    }
+
+    private String getFileName(String title) {
+        return path + "/" + title + ".pdf";
     }
 }

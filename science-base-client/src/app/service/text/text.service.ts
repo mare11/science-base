@@ -17,12 +17,12 @@ export class TextService {
     return this.http.get(this.textBaseUrl.concat(magazineName), {params});
   }
 
-  getTextFile(fileName) {
-    return this.http.get(this.textBaseUrl.concat('download/').concat(fileName), {responseType: 'blob'});
+  uploadTextFile(taskId, formData) {
+    return this.http.post(this.textBaseUrl.concat('upload/').concat(taskId), formData);
   }
 
-  submitTextFile(formData) {
-    return this.http.post(this.textBaseUrl, formData);
+  downloadTextFile(taskId) {
+    return this.http.get(this.textBaseUrl.concat('download/').concat(taskId), {responseType: 'blob'});
   }
 
   submitForm(taskId, value) {

@@ -5,6 +5,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.upp.sciencebase.dto.FormSubmissionDto;
 import org.upp.sciencebase.dto.TaskDto;
 import org.upp.sciencebase.dto.TextDto;
@@ -27,9 +28,16 @@ public class TextController {
         return ResponseEntity.ok(textService.startProcess(magazineName, username));
     }
 
-    @GetMapping(value = "/download/{title}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    public ResponseEntity<Resource> getTextFile(@PathVariable String title) {
-        return ResponseEntity.ok(textService.getTextFile(title));
+    @PostMapping(value = "/upload/{title}")
+    public ResponseEntity<Void> uploadTextFile(@PathVariable String title, @RequestParam("file") MultipartFile file,
+                                               @RequestParam("overwrite") boolean overwrite) {
+        textService.saveTextFile(title, file, overwrite);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping(value = "/download/{taskId}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity<Resource> downloadTextFile(@PathVariable String taskId) {
+        return ResponseEntity.ok(textService.getTextFile(taskId));
     }
 
     @PostMapping(value = "/{taskId}", consumes = MediaType.APPLICATION_JSON_VALUE)
