@@ -13,4 +13,5 @@ public class ProcessUtil {
     public static final String PAYMENT_METHOD_FIELD = "paymentMethod";
     public static final String SELECTED_MAG_FIELD = "selectedMag";
     public static final String SELECT_REVIEWERS_TASK = "select_reviewers_task";
+    public static final String READ_REVIEW_AUTHOR_TASK = "read_review_author";
 }

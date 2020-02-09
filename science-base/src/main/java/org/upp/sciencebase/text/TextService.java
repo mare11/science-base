@@ -120,15 +120,16 @@ public class TextService {
                 .taskId(taskId)
                 .singleResult();
         userTaskService.submitForm(submittedFields, previousTask.getId());
-        Task newTask = taskService.createTaskQuery()
+        List<Task> newTasks = taskService.createTaskQuery()
                 .processInstanceId(previousTask.getProcessInstanceId())
                 .active()
-                .singleResult();
+                .list();
 
-        if (ObjectUtils.isEmpty(newTask)) {
+        if (shouldNotReturnNextTaskData(newTasks)) {
             return null;
         }
 
+        Task newTask = newTasks.get(0);
         if (newTask.getAssignee().equals(previousTask.getAssignee())) {
             List<FormFieldDto> formFields = new ArrayList<>();
             TaskFormData taskFormData = formService.getTaskFormData(newTask.getId());
@@ -150,37 +151,29 @@ public class TextService {
     }
 
     public List<TextDto> getUserTexts(String username) {
-        return textRepository.findByAuthor_Username(username).stream()
+        return textRepository.findAll().stream()
                 .map(text ->
                         TextDto.builder()
                                 .title(text.getTitle())
                                 .keyTerms(text.getKeyTerms())
                                 .apstract(text.getApstract())
+                                .magazineName(text.getMagazine().getName())
+                                .mainEditor(text.getMagazine().getMainEditor().getUsername())
                                 .taskDto(getActiveTaskDataForText(username, text.getTitle()))
                                 .build())
                 .collect(Collectors.toList());
     }
 
-    public TaskDto getMagazineTextForm(String taskId) {
-        Task task = taskService.createTaskQuery()
-                .taskId(taskId)
-                .singleResult();
-        List<FormFieldDto> formFieldDtos = new ArrayList<>();
-        formService.getTaskFormData(task.getId()).getFormFields().forEach(formField -> {
-            FormFieldDto fieldDto = new FormFieldDto(formField);
-            formFieldDtos.add(fieldDto);
-        });
-        return TaskDto.builder()
-                .taskId(task.getId())
-                .taskName(task.getName())
-                .formFields(formFieldDtos)
-                .build();
+    private boolean shouldNotReturnNextTaskData(List<Task> newTasks) {
+        return ObjectUtils.isEmpty(newTasks) ||
+                (newTasks.size() > 1 && !newTasks.get(0).getTaskDefinitionKey().equals(READ_REVIEW_AUTHOR_TASK));
     }
 
     private Map<String, String> getReviewersForArea(String processInstanceId) {
         Map<String, Object> variables = runtimeService.getVariables(processInstanceId);
         List<UserDto> reviewersForArea = (List<UserDto>) variables.get("reviewersForArea");
         return reviewersForArea.stream()
+                .filter(reviewer -> !reviewer.getUsername().equals(variables.get("processInitiator")))
                 .collect(Collectors.toMap(UserDto::getUsername, UserDto::getFullName));
     }
 

@@ -75,21 +75,33 @@ export class TextDialogComponent {
     const value = this.form.value;
     console.log(value);
     const o = [];
-    Object.keys(value).forEach(
-      key => {
-        o.push({fieldId: key, fieldValue: key === 'file' ? this.file : value[key]});
-      });
+    if (!this.allControlsAreDisabled()) {
+      Object.keys(value).forEach(
+        key => {
+          o.push({fieldId: key, fieldValue: key === 'file' ? this.file : value[key]});
+        });
+    }
     console.log(o);
     this.textService.submitForm(this.formFieldsDto.taskId, o).subscribe(
       res => {
         console.log(res);
-        this.snackBar.showSnackBar('Text saved!');
+        this.snackBar.showSnackBar('Data saved!');
         this.dialogRef.close(res);
       },
       err => {
         this.snackBar.showSnackBar('An error occurred.');
       }
     );
+  }
+
+  allControlsAreDisabled() {
+    const controls = this.form.controls;
+    for (const control of Object.keys(controls)) {
+      if (controls[control].enabled) {
+        return false;
+      }
+    }
+    return true;
   }
 
   uploadFile(event) {

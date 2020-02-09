@@ -146,6 +146,7 @@ public class EditorService {
         Map<String, Object> variables = runtimeService.getVariables(processInstanceId);
         List<UserDto> reviewersForArea = (List<UserDto>) variables.get("reviewersForArea");
         return reviewersForArea.stream()
+                .filter(reviewer -> !reviewer.getUsername().equals(variables.get("processInitiator")))
                 .collect(Collectors.toMap(UserDto::getUsername, UserDto::getFullName));
     }
 }

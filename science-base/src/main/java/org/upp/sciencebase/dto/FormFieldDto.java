@@ -25,7 +25,7 @@ public class FormFieldDto {
         this.id = formField.getId();
         this.label = formField.getLabel();
         this.type = formField.getType();
-        this.value = formField.getValue().getValue();
+        this.value = formField.getDefaultValue() != null ? formField.getDefaultValue() : formField.getValue().getValue();
         this.validationConstraints = formField.getValidationConstraints();
     }
 }
