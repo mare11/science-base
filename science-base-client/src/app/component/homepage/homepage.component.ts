@@ -20,7 +20,6 @@ import {TextDialogComponent} from '../text-dialog/text-dialog.component';
 export class HomepageComponent implements OnInit {
 
   userDto: any;
-  userTasks: [];
   nonEnabledReviewers: any;
   nonApprovedMagazines: any;
   magazines: [];
@@ -55,21 +54,12 @@ export class HomepageComponent implements OnInit {
     if (this.userDto) {
       if (this.userDto.role === 'USER') {
         this.getUserTexts();
+      } else if (this.userDto.role === 'EDITOR') {
+        this.getEditorTexts();
       } else if (this.userDto.role === 'ADMIN') {
         this.getNonEnabledReviewers();
         this.getNonApprovedMagazines();
-      } else if (this.userDto.role === 'EDITOR') {
-        this.getMagazineTexts();
-        // TODO
-        // this.editorService.getMagazines(this.userDto.username).subscribe(
-        //   (data: []) => {
-        //     this.magazines = data;
-        //     console.log(data);
-        //   }
-        // );
       }
-    } else {
-      this.userTasks = [];
     }
   }
 
@@ -182,16 +172,16 @@ export class HomepageComponent implements OnInit {
       });
   }
 
-  getMagazineTexts() {
-    this.editorService.getMagazineTexts(this.userDto.username).subscribe(
+  getUserTexts() {
+    this.textService.getUserTextsWithActiveTask(this.userDto.username).subscribe(
       (data: []) => {
         this.texts = data;
       }
     );
   }
 
-  getUserTexts() {
-    this.textService.getUserTexts(this.userDto.username).subscribe(
+  getEditorTexts() {
+    this.editorService.getEditorTextsWithActiveTask(this.userDto.username).subscribe(
       (data: []) => {
         this.texts = data;
       }
@@ -218,27 +208,9 @@ export class HomepageComponent implements OnInit {
             }
           }
         );
-      });
-  }
-
-  openNewTextDialog(magazineName) {
-    this.textService.startProcess(magazineName, this.userDto.username).subscribe(
-      (res: any) => {
-        console.log(res);
-        const dialogRef = this.dialog.open(TextDialogComponent,
-          {
-            width: '500px',
-            disableClose: true,
-            autoFocus: true,
-            data: res
-          });
-        dialogRef.afterClosed().subscribe(
-          data => {
-            if (data) {
-              this.openNextTaskDialog(data);
-            }
-          }
-        );
+      },
+      error => {
+        this.snackBar.showSnackBar('An error occurred.');
       });
   }
 

@@ -36,7 +36,7 @@ public class NewTextEmailService implements JavaDelegate {
         Text text = textRepository.findByTitle(textTitle);
         Magazine magazine = magazineRepository.findByName(magazineName);
 
-//        emailService.sendNewTextNotificationMail(text.getAuthor(), text);
-//        emailService.sendNewTextNotificationMail(magazine.getMainEditor(), text);
+        emailService.sendNewTextNotificationMail(text.getAuthor(), text);
+        emailService.sendNewTextNotificationMail(magazine.getMainEditor(), text);
     }
 }

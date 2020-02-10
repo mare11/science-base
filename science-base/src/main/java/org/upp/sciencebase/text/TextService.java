@@ -121,13 +121,9 @@ public class TextService {
         }
     }
 
-    public Resource getTextFile(String taskId) {
+    public Resource getTextFile(String title) {
+        log.info("Reading file for text: {}", title);
         try {
-            Task task = taskService.createTaskQuery()
-                    .taskId(taskId)
-                    .singleResult();
-            String title = runtimeService.getVariable(task.getProcessInstanceId(), "title").toString();
-            log.info("Reading file for text: {}", title);
             return new ByteArrayResource(Files.readAllBytes(Path.of(getFileName(title))));
         } catch (Exception e) {
             log.error("Error while reading file for text!");
@@ -170,7 +166,7 @@ public class TextService {
         return null;
     }
 
-    public List<TextDto> getUserTexts(String username) {
+    public List<TextDto> getUserTextsWithActiveTask(String username) {
         return textRepository.findAll().stream()
                 .map(text ->
                         TextDto.builder()
@@ -179,7 +175,21 @@ public class TextService {
                                 .apstract(text.getApstract())
                                 .magazineName(text.getMagazine().getName())
                                 .mainEditor(text.getMagazine().getMainEditor().getUsername())
+                                .author(text.getAuthor().getFullName())
                                 .taskDto(getActiveTaskDataForText(username, text.getTitle()))
+                                .build())
+                .filter(textDto -> textDto.getTaskDto() != null)
+                .collect(Collectors.toList());
+    }
+
+    public List<TextDto> getMagazineTexts(String magazineName) {
+        return textRepository.findByAcceptedTrueAndMagazine_Name(magazineName).stream()
+                .map(text ->
+                        TextDto.builder()
+                                .title(text.getTitle())
+                                .keyTerms(text.getKeyTerms())
+                                .apstract(text.getApstract())
+                                .author(text.getAuthor().getFullName())
                                 .build())
                 .collect(Collectors.toList());
     }
@@ -205,6 +215,7 @@ public class TextService {
                 return TaskDto.builder()
                         .taskId(task.getId())
                         .taskName(task.getName())
+                        .taskAssignee(task.getAssignee())
                         .build();
             }
         }

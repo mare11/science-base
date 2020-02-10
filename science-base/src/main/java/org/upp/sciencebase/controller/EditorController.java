@@ -35,19 +35,13 @@ public class EditorController {
     }
 
     @GetMapping("/texts/{username}")
-    public ResponseEntity<List<TextDto>> getMagazineTexts(@PathVariable String username) {
-        return ResponseEntity.ok(editorService.getMagazineTexts(username));
+    public ResponseEntity<List<TextDto>> getEditorTextsWithActiveTask(@PathVariable String username) {
+        return ResponseEntity.ok(editorService.getEditorTextsWithActiveTask(username));
     }
 
     @GetMapping("/texts/form/{taskId}")
     public ResponseEntity<TaskDto> getMagazineTextForm(@PathVariable String taskId) {
         return ResponseEntity.ok(editorService.getMagazineTextForm(taskId));
     }
-
-//    @PutMapping("/texts/{taskId}")
-//    public ResponseEntity<Void> approveText(@RequestBody List<FormSubmissionDto> submittedFields, @PathVariable String taskId) {
-//        adminService.approveMagazine(submittedFields, taskId);
-//        return ResponseEntity.ok().build();
-//    }
 
 }

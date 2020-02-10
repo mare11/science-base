@@ -78,12 +78,15 @@ export class TextDialogComponent {
     if (file) {
       console.log(file);
       if (file.size > 2097152) {
-        alert('Exceeded allowed file size! Maximum size is 128 KB.');
+        alert('Exceeded allowed file size! Maximum size is 2 MB.');
+        this.file = null;
+        this.form.patchValue({file: null});
         return;
       }
       this.file = file;
     } else {
       this.file = null;
+      this.form.patchValue({file: null});
     }
   }
 
@@ -151,7 +154,7 @@ export class TextDialogComponent {
   }
 
   downloadFile() {
-    this.textService.downloadTextFile(this.data.taskId).subscribe(
+    this.textService.downloadTextFile(this.getFileName()).subscribe(
       (data) => {
         console.log(data);
         const url = window.URL.createObjectURL(data);

@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.upp.sciencebase.model.UserRoleEnum.EDITOR;
+import static org.upp.sciencebase.util.ProcessUtil.PROCESS_INITIATOR_FIELD;
 import static org.upp.sciencebase.util.ProcessUtil.SCIENCE_AREA_FIELD;
 
 @Slf4j
@@ -43,6 +44,7 @@ public class GetScienceAreaRedactionService implements JavaDelegate {
         List<UserDto> reviewersForArea = Optional.ofNullable(reviewers)
                 .orElse(Collections.emptySet())
                 .stream()
+                .filter(reviewer -> !reviewer.getUsername().equals(execution.getVariable(PROCESS_INITIATOR_FIELD).toString()))
                 .map(reviewer ->
                         UserDto.builder()
                                 .username(reviewer.getUsername())

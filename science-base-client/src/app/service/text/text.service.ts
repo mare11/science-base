@@ -17,19 +17,23 @@ export class TextService {
     return this.http.get(this.textBaseUrl.concat(magazineName), {params});
   }
 
-  uploadTextFile(taskId, formData) {
-    return this.http.post(this.textBaseUrl.concat('upload/').concat(taskId), formData);
+  uploadTextFile(title, formData) {
+    return this.http.post(this.textBaseUrl.concat('upload/').concat(title), formData);
   }
 
-  downloadTextFile(taskId) {
-    return this.http.get(this.textBaseUrl.concat('download/').concat(taskId), {responseType: 'blob'});
+  downloadTextFile(title) {
+    return this.http.get(this.textBaseUrl.concat('download/').concat(title), {responseType: 'blob'});
   }
 
   submitForm(taskId, value) {
     return this.http.post(this.textBaseUrl.concat(taskId), value);
   }
 
-  getUserTexts(username) {
-    return this.http.get(this.textBaseUrl.concat('all/').concat(username));
+  getUserTextsWithActiveTask(username) {
+    return this.http.get(this.textBaseUrl.concat('user/').concat(username));
+  }
+
+  getMagazineTexts(magazineName) {
+    return this.http.get(this.textBaseUrl.concat('magazine/').concat(magazineName));
   }
 }

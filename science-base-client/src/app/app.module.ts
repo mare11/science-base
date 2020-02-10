@@ -13,7 +13,8 @@ import {RegistrationDialogComponent} from './component/registration-dialog/regis
 import {LoginDialogComponent} from './component/login-dialog/login-dialog.component';
 import {MagazineDialogComponent} from './component/magazine-dialog/magazine-dialog.component';
 import {TextDialogComponent} from './component/text-dialog/text-dialog.component';
-import { MagazineOverviewComponent } from './component/magazine-overview/magazine-overview.component';
+import {MagazineOverviewComponent} from './component/magazine-overview/magazine-overview.component';
+import {LoginRegistrationDialogComponent} from './component/login-registration-dialog/login-registration-dialog.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { MagazineOverviewComponent } from './component/magazine-overview/magazin
     HomepageComponent,
     MagazineDialogComponent,
     TextDialogComponent,
-    MagazineOverviewComponent
+    MagazineOverviewComponent,
+    LoginRegistrationDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -37,7 +39,7 @@ import { MagazineOverviewComponent } from './component/magazine-overview/magazin
   ],
   providers: [],
   bootstrap: [AppComponent],
-  entryComponents: [RegistrationDialogComponent, LoginDialogComponent, MagazineDialogComponent, TextDialogComponent]
+  entryComponents: [RegistrationDialogComponent, LoginDialogComponent, MagazineDialogComponent, TextDialogComponent, LoginRegistrationDialogComponent]
 })
 export class AppModule {
 }

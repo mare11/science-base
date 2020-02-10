@@ -11,13 +11,13 @@ import org.upp.sciencebase.util.EmailService;
 
 @Slf4j
 @Service
-public class RejectTextService implements JavaDelegate {
+public class AcceptTextService implements JavaDelegate {
 
     private final EmailService emailService;
     private final TextRepository textRepository;
 
     @Autowired
-    public RejectTextService(EmailService emailService, TextRepository textRepository) {
+    public AcceptTextService(EmailService emailService, TextRepository textRepository) {
         this.emailService = emailService;
         this.textRepository = textRepository;
     }
@@ -26,9 +26,9 @@ public class RejectTextService implements JavaDelegate {
     public void execute(DelegateExecution execution) {
         String title = execution.getVariable("title").toString();
         Text text = textRepository.findByTitle(title);
-        text.setRejected(true);
+        text.setAccepted(true);
         textRepository.save(text);
-        log.info("Text: {} rejected!", title);
-        emailService.sendFinalTextNotificationMail(text.getAuthor(), text, false);
+        log.info("Text: {} accepted!", title);
+        emailService.sendFinalTextNotificationMail(text.getAuthor(), text, true);
     }
 }

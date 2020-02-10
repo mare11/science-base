@@ -14,5 +14,6 @@ import java.util.List;
 public class TaskDto {
     String taskId;
     String taskName;
+    String taskAssignee;
     List<FormFieldDto> formFields;
 }

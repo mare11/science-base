@@ -25,8 +25,11 @@ public class Text {
     @Column(nullable = false)
     private String apstract;
 
-    @Column(columnDefinition = "blob")
-    private byte[] file;
+    @Column(nullable = false)
+    private boolean accepted;
+
+    @Column(nullable = false)
+    private boolean rejected;
 
     @ManyToOne
     private ScienceArea scienceArea;

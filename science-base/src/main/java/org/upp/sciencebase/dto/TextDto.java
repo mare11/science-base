@@ -15,6 +15,7 @@ public class TextDto {
     private String keyTerms;
     private String apstract;
     private boolean accepted;
+    private String author;
     private String magazineName;
     private String mainEditor;
     private TaskDto taskDto;

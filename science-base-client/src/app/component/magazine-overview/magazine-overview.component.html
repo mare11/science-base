@@ -1,1 +1,31 @@
-<p>magazine-overview works!</p>
+<div>
+  <h1 matSubheader>Texts</h1>
+  <button mat-raised-button color="primary" (click)="openNewTextDialog()"
+          *ngIf="!userDto || (userDto && userDto.role =='USER')">
+    New Text
+  </button>
+  <table class="table">
+    <thead class="thead-light">
+    <tr>
+      <th scope="col">Title</th>
+      <th scope="col">Key Terms</th>
+      <th scope="col">Abstract</th>
+      <th scope="col">Author</th>
+      <th scope="col">Download</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let text of texts">
+      <td>{{text.title}}</td>
+      <td>{{text.keyTerms}}</td>
+      <td>{{text.apstract}}</td>
+      <td>{{text.author}}</td>
+      <td>
+        <button mat-icon-button color="primary" (click)="downloadFile(text.title)">
+          <mat-icon>cloud_download</mat-icon>
+        </button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>

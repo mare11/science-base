@@ -51,6 +51,29 @@ public class EmailService {
     }
 
     @Async
+    public void sendFinalTextNotificationMail(User user, Text text, boolean accepted) {
+        log.info("Sending email to user: {}", user.getUsername());
+        try {
+            MimeMessage mail = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mail, false, "utf-8");
+
+            helper.setTo(user.getEmail());
+            helper.setFrom(mailUsername);
+            helper.setSubject("Science Base - Final Text Notification");
+            String message = "Hello " + user.getUsername() + ",<br><br>"
+                    + "Text '" + text.getTitle() + "' with author '" + user.getFullName() + "' for magazine '" + text.getMagazine().getName()
+                    + "' has been <b>" + (accepted ? "ACCEPTED" : "REJECTED") + "!</b><br><br>"
+                    + "Regards, <br><br>" + "<i>Science Base Team</i>";
+            helper.setText(message, true);
+            mailSender.send(mail);
+
+            log.info("Email sent to user! (username: {}, email: {})", user.getUsername(), user.getEmail());
+        } catch (Exception e) {
+            log.error("Error while sending email to user! (username: {}, email: {})", user.getUsername(), user.getEmail());
+        }
+    }
+
+    @Async
     public void sendRegistrationMail(User user, String processInstanceId) {
         log.info("Sending email to user: {}", user.getUsername());
         try {

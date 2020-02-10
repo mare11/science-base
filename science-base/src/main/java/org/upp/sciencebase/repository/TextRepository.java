@@ -14,4 +14,7 @@ public interface TextRepository extends JpaRepository<Text, Long> {
     List<Text> findByMagazine_MainEditor_Username(String username);
 
     List<Text> findByAuthor_Username(String username);
+
+    List<Text> findByAcceptedTrueAndMagazine_Name(String magazineName);
+
 }

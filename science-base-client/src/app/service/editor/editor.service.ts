@@ -20,7 +20,7 @@ export class EditorService {
     return this.http.get(this.editorsBaseUrl.concat(this.formFieldsUrl).concat(username));
   }
 
-  getMagazineTexts(username) {
+  getEditorTextsWithActiveTask(username) {
     return this.http.get(this.editorsBaseUrl.concat('texts/').concat(username));
   }
 

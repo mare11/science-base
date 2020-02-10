@@ -13,6 +13,7 @@ import org.upp.sciencebase.dto.FormFieldDto;
 import org.upp.sciencebase.dto.FormSubmissionDto;
 import org.upp.sciencebase.dto.MagazineDto;
 import org.upp.sciencebase.dto.TaskDto;
+import org.upp.sciencebase.model.Magazine;
 import org.upp.sciencebase.model.PaymentMethod;
 import org.upp.sciencebase.model.ScienceArea;
 import org.upp.sciencebase.model.User;
@@ -53,6 +54,7 @@ public class MagazineService {
 
     public List<MagazineDto> getAllMagazines() {
         return magazineRepository.findAll().stream()
+                .filter(Magazine::isEnabled)
                 .map(magazine ->
                         MagazineDto.builder()
                                 .name(magazine.getName())

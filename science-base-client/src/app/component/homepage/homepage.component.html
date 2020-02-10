@@ -11,7 +11,6 @@
       <th scope="col">ISSN</th>
       <th scope="col">Enabled</th>
       <th scope="col">Correction</th>
-      <th scope="col">New text</th>
       <th scope="col">Overview</th>
     </tr>
     </thead>
@@ -27,12 +26,6 @@
         <button *ngIf="mag.taskDto" mat-icon-button color="primary"
                 (click)="openMagazineDialogForCorrection(mag.taskDto.taskId)">
           <mat-icon>edit</mat-icon>
-        </button>
-      </td>
-      <td>
-        <button *ngIf="mag.enabled && userDto" mat-icon-button color="primary"
-                (click)="openNewTextDialog(mag.name)">
-          <mat-icon>library_add</mat-icon>
         </button>
       </td>
       <td>
@@ -110,12 +103,14 @@
 </div>
 
 <div *ngIf="userDto && (userDto.role =='USER' ||userDto.role =='EDITOR')">
-  <h1 matSubheader>Texts</h1>
+  <h1 matSubheader>Active texts tasks</h1>
   <table class="table">
     <thead class="thead-light">
     <tr>
       <th scope="col">Title</th>
       <th scope="col">Key Terms</th>
+      <th scope="col">Abstract</th>
+      <th scope="col">Author</th>
       <th scope="col">Action</th>
     </tr>
     </thead>
@@ -123,8 +118,10 @@
     <tr *ngFor="let text of texts">
       <td>{{text.title}}</td>
       <td>{{text.keyTerms}}</td>
+      <td>{{text.apstract}}</td>
+      <td>{{text.author}}</td>
       <td>
-        <button *ngIf="text.taskDto" mat-icon-button color="primary"
+        <button *ngIf="text.taskDto && text.taskDto.taskAssignee == userDto.username" mat-icon-button color="primary"
                 (click)="openTextActionDialog(text.title, text.taskDto)">
           <mat-icon>edit</mat-icon>
         </button>

@@ -83,15 +83,17 @@ public class EditorService {
                 .build();
     }
 
-    public List<TextDto> getMagazineTexts(String username) {
-        return textRepository.findByMagazine_MainEditor_Username(username).stream()
+    public List<TextDto> getEditorTextsWithActiveTask(String username) {
+        return textRepository.findAll().stream()
                 .map(text ->
                         TextDto.builder()
                                 .title(text.getTitle())
                                 .keyTerms(text.getKeyTerms())
                                 .apstract(text.getApstract())
+                                .author(text.getAuthor().getFullName())
                                 .taskDto(getActiveTaskDataForText(username, text.getTitle()))
                                 .build())
+                .filter(textDto -> textDto.getTaskDto() != null)
                 .collect(Collectors.toList());
     }
 
@@ -136,6 +138,7 @@ public class EditorService {
                 return TaskDto.builder()
                         .taskId(task.getId())
                         .taskName(task.getName())
+                        .taskAssignee(task.getAssignee())
                         .build();
             }
         }

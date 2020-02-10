@@ -1,0 +1,14 @@
+<h1 mat-dialog-title>Sign In or Sign Up</h1>
+<mat-dialog-content>
+  <p>To execute this action you need to be logged in.<br>
+    Click <b>Login</b> below if you already have an account, or <b>Registration</b> if you don't have one.</p>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-raised-button color="primary" type="submit" (click)="openLoginDialog()">
+    Login
+  </button>
+  <button mat-raised-button color="primary" type="submit" (click)="openRegistrationDialog()">
+    Registration
+  </button>
+  <button mat-raised-button [mat-dialog-close]>Cancel</button>
+</mat-dialog-actions>

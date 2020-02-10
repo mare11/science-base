@@ -55,12 +55,9 @@ public class SaveTextService implements JavaDelegate {
         Text.TextBuilder textBuilder = Text.builder()
                 .title(execution.getVariable("title").toString())
                 .keyTerms(execution.getVariable("keyTerms").toString())
-                .apstract(execution.getVariable("apstract").toString());
-
-        if (execution.getVariable("file") != null) {
-            byte[] file = (byte[]) execution.getVariable("file");
-            textBuilder.file(file);
-        }
+                .apstract(execution.getVariable("apstract").toString())
+                .accepted(false)
+                .rejected(false);
 
         String areaKey = execution.getVariable("scienceArea").toString();
         ScienceArea area = scienceAreaRepository.findByAreaKey(areaKey);

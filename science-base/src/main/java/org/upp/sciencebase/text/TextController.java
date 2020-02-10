@@ -35,9 +35,9 @@ public class TextController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping(value = "/download/{taskId}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    public ResponseEntity<Resource> downloadTextFile(@PathVariable String taskId) {
-        return ResponseEntity.ok(textService.getTextFile(taskId));
+    @GetMapping(value = "/download/{title}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity<Resource> downloadTextFile(@PathVariable String title) {
+        return ResponseEntity.ok(textService.getTextFile(title));
     }
 
     @PostMapping(value = "/{taskId}", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -45,8 +45,13 @@ public class TextController {
         return ResponseEntity.ok(textService.submitFormAndGetNextTaskData(submittedFields, taskId));
     }
 
-    @GetMapping("/all/{username}")
-    public ResponseEntity<List<TextDto>> getUserTexts(@PathVariable String username) {
-        return ResponseEntity.ok(textService.getUserTexts(username));
+    @GetMapping("/user/{username}")
+    public ResponseEntity<List<TextDto>> getUserTextsWithActiveTask(@PathVariable String username) {
+        return ResponseEntity.ok(textService.getUserTextsWithActiveTask(username));
+    }
+
+    @GetMapping("/magazine/{magazineName}")
+    public ResponseEntity<List<TextDto>> getMagazineTexts(@PathVariable String magazineName) {
+        return ResponseEntity.ok(textService.getMagazineTexts(magazineName));
     }
 }
